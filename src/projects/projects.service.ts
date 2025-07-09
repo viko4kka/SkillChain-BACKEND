@@ -11,4 +11,7 @@ export class ProjectsService {
     const projects = await this.prisma.project.findMany();
     return plainToInstance(ProjectDto, projects);
   }
+  // findAll() {
+  //   return this.prisma.project.findMany();
+  // }
 }
