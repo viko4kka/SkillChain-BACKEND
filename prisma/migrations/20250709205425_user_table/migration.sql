@@ -1,11 +1,11 @@
 -- CreateTable
 CREATE TABLE "User" (
     "id" SERIAL NOT NULL,
-    "first_name" TEXT NOT NULL,
-    "last_name" TEXT NOT NULL,
+    "firstName" TEXT NOT NULL,
+    "lastName" TEXT NOT NULL,
     "description" TEXT,
-    "linkGit" TEXT,
-    "linkLinkedIn" TEXT,
+    "gitUrl" TEXT,
+    "linkedinUrl" TEXT,
 
     CONSTRAINT "User_pkey" PRIMARY KEY ("id")
 );

@@ -6,7 +6,6 @@
 
 generator client {
   provider = "prisma-client-js"
-  //output   = "../generated/prisma"
 }
 
 datasource db {
@@ -14,20 +13,19 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-
 model Project {
-  id Int @id @default(autoincrement())
+  id          Int     @id @default(autoincrement())
   projectName String
   description String?
-  githubLink String?
+  githubLink  String?
   websiteLink String?
-} 
+}
 
 model User {
-  id           Int     @id @default(autoincrement())
-  first_name   String
-  last_name    String
-  description  String?
-  linkGit      String?
-  linkLinkedIn String?
+  id          Int     @id @default(autoincrement())
+  firstName   String
+  lastName    String
+  description String?
+  gitUrl      String?
+  linkedinUrl String?
 }
