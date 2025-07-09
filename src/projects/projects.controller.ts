@@ -1,4 +1,5 @@
 import { Controller, Get, HttpCode } from '@nestjs/common';
+import { ProjectDto } from './dto/project.dto';
 import { ProjectsService } from './projects.service';
 
 @Controller('projects')
@@ -7,7 +8,7 @@ export class ProjectsController {
 
   @Get()
   @HttpCode(200)
-  findAll() {
-    return this.projectsService.findAll();
+  findAll(): Promise<ProjectDto[]> {
+    return this.projectsService.findAllProjects();
   }
 }

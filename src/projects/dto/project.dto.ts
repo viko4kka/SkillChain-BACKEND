@@ -1,18 +1,21 @@
 import { ApiProperty } from '@nestjs/swagger';
 
 export class ProjectDto {
-  @ApiProperty()
+  @ApiProperty({ description: 'Unique identifier for the project' })
   id: number;
 
-  @ApiProperty()
+  @ApiProperty({ description: 'Name of the project' })
   projectName: string;
 
-  @ApiProperty()
-  description?: string;
+  @ApiProperty({ description: 'Short description of the project' })
+  description: string;
 
-  @ApiProperty()
-  githubLink?: string;
+  @ApiProperty({
+    description: 'Link to the GitHub repository',
+    required: false,
+  })
+  githubLink?: string | null;
 
-  @ApiProperty({ required: false })
-  websiteLink?: string;
+  @ApiProperty({ description: 'Link to the project website', required: false })
+  websiteLink?: string | null;
 }
