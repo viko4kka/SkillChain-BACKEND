@@ -2,7 +2,7 @@
 CREATE TABLE "Project" (
     "id" SERIAL NOT NULL,
     "projectName" TEXT NOT NULL,
-    "description" TEXT,
+    "description" TEXT NOT NULL,
     "githubLink" TEXT,
     "websiteLink" TEXT,
 

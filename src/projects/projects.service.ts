@@ -11,9 +11,12 @@ export class ProjectsService {
     return projects.map((project) => ({
       id: project.id,
       projectName: project.projectName,
-      description: project.description!,
+      description: project.description,
       githubLink: project.githubLink ?? null,
       websiteLink: project.websiteLink ?? null,
     }));
   }
+  // findAll() {
+  //   return this.prisma.project.findMany();
+  // }
 }
