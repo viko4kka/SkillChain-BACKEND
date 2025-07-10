@@ -69,6 +69,9 @@
     "typescript": "^5.7.3",
     "typescript-eslint": "^8.20.0"
   },
+  "prisma": {
+  "schema": "./prisma/schema/"
+  },
   "jest": {
     "moduleFileExtensions": [
       "js",
