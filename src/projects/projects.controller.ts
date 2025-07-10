@@ -14,8 +14,8 @@ export class ProjectsController {
   })
   @Get()
   @HttpCode(200)
-  findAll() {
-    const projects = this.projectsService.findAllProjects();
+  async findAll() {
+    const projects = await this.projectsService.findAllProjects();
     return instanceToPlain(projects);
   }
 }

@@ -23,10 +23,18 @@ model Project {
 }
 
 model User {
-  id          Int     @id @default(autoincrement())
+  id          Int        @id @default(autoincrement())
   firstName   String
   lastName    String
   description String?
   gitUrl      String?
   linkedinUrl String?
+  languages   Language[]
+}
+
+model Language {
+  id     Int    @id @default(autoincrement())
+  name   String
+  userId Int
+  user   User   @relation(fields: [userId], references: [id])
 }
