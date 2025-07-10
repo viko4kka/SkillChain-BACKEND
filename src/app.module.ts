@@ -1,20 +1,25 @@
-// src/app.module.ts
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
-import { DatabaseModule } from './database/database.module';
 import { AuthModule } from './auth/auth.module';
-import { UsersModule } from './users/user.module';
+import { UserModule } from './users/user.module';
 import { AppService } from './app.service';
 import { AppController } from './app.controller';
-
+import { PrismaModule } from 'prisma/prisma.module';
+import { ProjectsModule } from './projects/projects.module';
+import { LanguageModule } from './languages/language.module';
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
-    DatabaseModule,
-    UsersModule,
+    UserModule,
     AuthModule,
+    ProjectsModule,
+    LanguageModule,
+    PrismaModule
   ],
   controllers: [AppController],
   providers: [AppService],
-})
+  })
 export class AppModule {}
+
+
+
