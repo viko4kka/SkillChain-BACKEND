@@ -1,18 +1,35 @@
 import { NestFactory } from '@nestjs/core';
-import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { AppModule } from './app.module';
+import * as session from 'express-session';
+import * as passport from 'passport';
+import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
-const config = new DocumentBuilder()
+  app.use(
+    session({
+      secret: process.env.LINKEDIN_CLIENT_SECRET!, 
+      resave: false,
+      saveUninitialized: false,
+      cookie: {
+        maxAge: 3600000, // 1 godzina
+      },
+    }),
+  );
+
+  app.use(passport.initialize());
+  app.use(passport.session());
+
+  // Swagger setup
+  const config = new DocumentBuilder()
     .setTitle('SkillChain')
     .setDescription('SkillChain API description')
     .setVersion('1.0')
     .addTag('skills')
     .build();
-  const documentFactory = () => SwaggerModule.createDocument(app, config);
-  SwaggerModule.setup('api', app, documentFactory);
+  const document = SwaggerModule.createDocument(app, config);
+  SwaggerModule.setup('api', app, document);
 
   await app.listen(process.env.PORT ?? 3000);
 }
