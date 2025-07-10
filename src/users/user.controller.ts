@@ -12,7 +12,8 @@ export class UserController {
     type: [UserDto],
   })
   @Get()
-  findAllUsers(): Promise<UserDto[]> {
-    return this.userService.findAllUsers();
+  async findAllUsers() {
+    const users = await this.userService.findAllUsers();
+    return users;
   }
 }

@@ -1,6 +1,6 @@
 import { Controller, Get, HttpCode } from '@nestjs/common';
-import { ProjectDto } from './dto/project.dto';
 import { ProjectsService } from './projects.service';
+import { ProjectDto } from './dto/project.dto';
 import { ApiOkResponse } from '@nestjs/swagger';
 import { instanceToPlain } from 'class-transformer';
 
@@ -16,6 +16,6 @@ export class ProjectsController {
   @HttpCode(200)
   async findAll() {
     const projects = await this.projectsService.findAllProjects();
-    return instanceToPlain(projects);
+    return projects;
   }
 }

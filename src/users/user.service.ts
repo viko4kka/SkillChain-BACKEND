@@ -2,7 +2,7 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'prisma/prisma.service';
 import { UserDto } from './dto/users.dto';
-import { userToDto } from './user.mapper';
+import { plainToInstance } from 'class-transformer';
 
 @Injectable()
 export class UserService {
@@ -10,6 +10,6 @@ export class UserService {
 
   async findAllUsers(): Promise<UserDto[]> {
     const users = await this.prisma.user.findMany();
-    return users.map(userToDto);
+    return plainToInstance(UserDto, users);
   }
 }

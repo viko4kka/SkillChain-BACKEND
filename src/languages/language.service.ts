@@ -6,9 +6,8 @@ import { PrismaService } from 'prisma/prisma.service';
 export class LanguageService {
   constructor(private prisma: PrismaService) {}
 
-  async getLanguagesByUserId(userId: number) {
-    return this.prisma.language.findMany({
-      where: { userId },
-    });
+  async findAllLanguages() {
+    const users = await this.prisma.language.findMany();
+    return users;
   }
 }
