@@ -1,71 +1,58 @@
-import { Controller, Get, Req, Res } from '@nestjs/common';
-import { Request, Response } from 'express';
+import {
+  Controller,
+  Get,
+  Req,
+  Res,
+  Query,
+  Session,
+  BadRequestException,
+  InternalServerErrorException,
+} from '@nestjs/common';
+import { Request } from 'express';
 import { randomUUID } from 'crypto';
-import axios from 'axios';
+import { LinkedinService } from './linkedin.service';
 
 @Controller('auth')
 export class AuthController {
-  @Get('linkedin')
-  async linkedinAuth(@Req() req: Request, @Res() res: Response) {
-    const state = randomUUID();
-    req.session.linkedinState = state;
+  constructor(private readonly linkedinService: LinkedinService) {}
 
-    const redirectUrl = `https://www.linkedin.com/oauth/v2/authorization` +
+  @Get('linkedin')
+  async linkedinAuth(@Session() session: Record<string, any>, @Res() res: any) {
+    const state = randomUUID();
+    session.linkedinState = state;
+
+    const redirectUrl =
+      `https://www.linkedin.com/oauth/v2/authorization` +
       `?response_type=code` +
       `&client_id=${process.env.LINKEDIN_CLIENT_ID}` +
       `&redirect_uri=${encodeURIComponent('http://localhost:3000/auth/linkedin/callback')}` +
       `&state=${state}` +
       `&scope=openid%20profile%20email`;
 
-    return res.redirect(redirectUrl);
+    return res.redirect(redirectUrl); // tu zostawiamy ręczny redirect
   }
 
   @Get('linkedin/callback')
-  async linkedinCallback(@Req() req: Request, @Res() res: Response) {
-    const { code, state } = req.query;
-
-    // 1. Sprawdź state
+  async linkedinCallback(
+    @Query('code') code: string,
+    @Query('state') state: string,
+    @Req() req: Request,
+  ) {
     if (state !== req.session.linkedinState) {
-      return res.status(400).send('Invalid state parameter');
+      throw new BadRequestException('Invalid state parameter');
     }
 
     try {
-      // 2. Wymień code na access token
-      const tokenResponse = await axios.post(
-        'https://www.linkedin.com/oauth/v2/accessToken',
-        new URLSearchParams({
-          grant_type: 'authorization_code',
-          code: code as string,
-          redirect_uri: 'http://localhost:3000/auth/linkedin/callback',
-          client_id: process.env.LINKEDIN_CLIENT_ID!,
-          client_secret: process.env.LINKEDIN_CLIENT_SECRET!,
-        }),
-        {
-          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        },
-      );
+      const accessToken = await this.linkedinService.exchangeCodeForToken(code);
+      const user = await this.linkedinService.fetchUserInfo(accessToken);
 
-      const accessToken = tokenResponse.data.access_token;
-
-      // 3. Pobierz dane użytkownika z LinkedIn (OIDC userinfo endpoint)
-      const userInfoResponse = await axios.get('https://api.linkedin.com/v2/userinfo', {
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-        },
-      });
-
-      const user = userInfoResponse.data;
-
-      console.log('LinkedIn user:', user);
-
-      // 4. Tutaj możesz zalogować użytkownika do sesji lub zwrócić token
-      return res.json({
+      return {
         message: 'Zalogowano przez LinkedIn!',
         user,
-      });
+      };
     } catch (error) {
       console.error('LinkedIn callback error:', error?.response?.data || error);
-      return res.status(500).send('Błąd logowania przez LinkedIn.');
+      throw new InternalServerErrorException('Błąd logowania przez LinkedIn.');
     }
   }
 }

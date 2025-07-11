@@ -13,7 +13,7 @@ async function bootstrap() {
       resave: false,
       saveUninitialized: false,
       cookie: {
-        maxAge: 3600000, // 1 godzina
+        maxAge: 3600000, 
       },
     }),
   );
@@ -21,7 +21,6 @@ async function bootstrap() {
   app.use(passport.initialize());
   app.use(passport.session());
 
-  // Swagger setup
   const config = new DocumentBuilder()
     .setTitle('SkillChain')
     .setDescription('SkillChain API description')

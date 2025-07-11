@@ -7,6 +7,7 @@ import { AppController } from './app.controller';
 import { PrismaModule } from 'prisma/prisma.module';
 import { ProjectsModule } from './projects/projects.module';
 import { LanguageModule } from './languages/language.module';
+
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
@@ -20,6 +21,3 @@ import { LanguageModule } from './languages/language.module';
   providers: [AppService],
   })
 export class AppModule {}
-
-
-

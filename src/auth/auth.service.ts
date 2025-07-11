@@ -13,7 +13,17 @@ export class AuthService {
     let user = await this.usersService.findByLinkedinId(profile.linkedinId);
 
     if (!user) {
-      user = await this.usersService.create(profile);
+      const [firstName, ...lastNameParts] = profile.name.split(' ');
+      const lastName = lastNameParts.join(' ');
+
+      const createUserInput = {
+        linkedinId: profile.linkedinId,
+        firstName,
+        lastName,
+        email: profile.email,
+      };
+
+      user = await this.usersService.create(createUserInput);
     }
 
     const payload = { sub: user.id, email: user.email };
