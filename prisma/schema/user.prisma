@@ -3,6 +3,7 @@ model User {
     firstName   String
     lastName    String
     description String?
+    job         String?
     gitUrl      String?
     linkedinUrl String?
     languages   Language[]
