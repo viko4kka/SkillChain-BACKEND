@@ -6,6 +6,10 @@ export class UpdateUserProfileDto {
   description?: string;
 
   @IsOptional()
+  @IsString()
+  job?: string;
+
+  @IsOptional()
   @IsUrl()
   gitUrl?: string;
 
