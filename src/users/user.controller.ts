@@ -18,12 +18,19 @@ export class UserController {
     return users;
   }
 
+  @ApiOkResponse({
+    description: 'Returns one user by ID',
+    type: [UserDto],
+  })
+  @Get(':id')
+  async findOneUser(@Param('id') id: string) {
+    const users = await this.userService.findOneUser(+id);
+    return users;
+  }
+
   @Patch(':id/profile')
   @UsePipes()
-  updateProfile(
-    @Param('id') id: string,
-    @Body() updateUserDto: UpdateUserProfileDto,
-  ) {
+  updateProfile(@Param('id') id: string, @Body() updateUserDto: UpdateUserProfileDto) {
     return this.userService.updateProfile(+id, updateUserDto);
   }
 }

@@ -14,6 +14,13 @@ export class UserService {
     return plainToInstance(UserDto, users);
   }
 
+  async findOneUser(id: number): Promise<UserDto | null> {
+    const user = await this.prisma.user.findUnique({
+      where: { id },
+    });
+    return user ? plainToInstance(UserDto, user) : null;
+  }
+
   async findByLinkedinId(linkedinId: string): Promise<UserDto | null> {
     const user = await this.prisma.user.findUnique({
       where: { linkedinId },
