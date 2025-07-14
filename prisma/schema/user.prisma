@@ -1,5 +1,6 @@
 model User {
     id          Int        @id @default(autoincrement())
+    linkedinId  String?    @unique
     firstName   String
     lastName    String
     description String?
@@ -8,3 +9,4 @@ model User {
     linkedinUrl String?
     languages   Language[]
 }
+

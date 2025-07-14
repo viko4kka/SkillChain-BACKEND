@@ -1,14 +1,25 @@
 import { Module } from '@nestjs/common';
-import { AppController } from './app.controller';
+import { ConfigModule } from '@nestjs/config';
+import { AuthModule } from './auth/auth.module';
+import { UserModule } from './users/user.module';
+import { HttpModule } from '@nestjs/axios';
 import { AppService } from './app.service';
-import { UserModule } from './users/user.module'; // Dodaj ten import
+import { AppController } from './app.controller';
 import { PrismaModule } from 'prisma/prisma.module';
 import { ProjectsModule } from './projects/projects.module';
 import { LanguageModule } from './languages/language.module';
 
 @Module({
-  imports: [UserModule, ProjectsModule, LanguageModule, PrismaModule], // Dodaj UserModule do imports
+  imports: [
+    HttpModule,
+    ConfigModule.forRoot({ isGlobal: true }),
+    UserModule,
+    AuthModule,
+    ProjectsModule,
+    LanguageModule,
+    PrismaModule
+  ],
   controllers: [AppController],
   providers: [AppService],
-})
+  })
 export class AppModule {}
