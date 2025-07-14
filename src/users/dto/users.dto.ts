@@ -20,6 +20,9 @@ export class UserDto {
   })
   description: string | null;
 
+  @ApiProperty({ description: 'Users job' })
+  job: string | null;
+
   @ApiProperty({ description: 'Link to the users GitHub profile' })
   gitUrl: string | null;
 

@@ -3,6 +3,7 @@ import { PrismaService } from 'prisma/prisma.service';
 import { UserDto } from './dto/users.dto';
 import { plainToInstance } from 'class-transformer';
 import { CreateUserInput } from './dto/create-user.dto';
+import { UpdateUserProfileDto } from './dto/update-use-profile.dto';
 
 @Injectable()
 export class UserService {
@@ -25,5 +26,12 @@ export class UserService {
       data: userData,
     });
     return plainToInstance(UserDto, createdUser);
+  }
+
+  async updateProfile(id: number, data: UpdateUserProfileDto) {
+    return this.prisma.user.update({
+      where: { id },
+      data,
+    });
   }
 }

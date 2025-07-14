@@ -4,6 +4,7 @@ import * as session from 'express-session';
 import * as passport from 'passport';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { ConfigService } from '@nestjs/config';
+import { ValidationPipe } from '@nestjs/common';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -23,6 +24,14 @@ async function bootstrap() {
 
   app.use(passport.initialize());
   app.use(passport.session());
+
+  app.useGlobalPipes(
+    new ValidationPipe({
+      whitelist: true,
+      forbidNonWhitelisted: true,
+      transform: true,
+    }),
+  );
 
   const config = new DocumentBuilder()
     .setTitle('SkillChain')
