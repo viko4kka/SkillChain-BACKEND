@@ -1,11 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Exclude } from 'class-transformer';
 
-export class ProjectDto {
-  @ApiProperty({ description: 'Unique identifier for the project' })
-  @Exclude()
-  id: number;
-
+export class CreateProjectDto {
   @ApiProperty({ description: 'Name of the project' })
   projectName: string;
 
@@ -20,4 +15,7 @@ export class ProjectDto {
 
   @ApiProperty({ description: 'Link to the project website', required: false })
   websiteLink?: string | null;
+
+  @ApiProperty({ description: 'ID of the user creating the project' })
+  idUser: number;
 }

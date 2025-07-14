@@ -1,8 +1,9 @@
-
 model Project {
-  id Int @id @default(autoincrement())
-  projectName String
-  description String
-  githubLink String?
-  websiteLink String?
-} 
+    id          Int     @id @default(autoincrement())
+    idUser      Int
+    projectName String
+    description String
+    githubLink  String?
+    websiteLink String?
+    user User @relation(fields: [idUser], references: [id])
+}
