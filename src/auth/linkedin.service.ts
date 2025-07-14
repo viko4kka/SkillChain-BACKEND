@@ -16,17 +16,18 @@ export class LinkedinService {
     const clientSecret = this.configService.get<string>('LINKEDIN_CLIENT_SECRET');
     const redirectUri = this.configService.get<string>('LINKEDIN_REDIRECT_URI');
 
-    const params = new URLSearchParams();
-    params.append('grant_type', 'authorization_code');
-    params.append('code', code);
-    params.append('redirect_uri', redirectUri!);
-    params.append('client_id', clientId!);
-    params.append('client_secret', clientSecret!);
+    const params = {
+      grant_type: 'authorization_code',
+      code,
+      redirect_uri: redirectUri!,
+      client_id: clientId!,
+      client_secret: clientSecret!,
+    };
 
     const response: AxiosResponse = await firstValueFrom(
       this.httpService.post(
         'https://www.linkedin.com/oauth/v2/accessToken',
-        params.toString(),
+        new URLSearchParams(params),
         {
           headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
         },
