@@ -4,7 +4,6 @@ import { PrismaService } from 'prisma/prisma.service';
 import { ProjectDto } from './dto/project.dto';
 import { plainToInstance } from 'class-transformer';
 import { CreateProjectDto } from './dto/create.project.dto';
-import { Project } from '@prisma/client';
 
 @Injectable()
 export class ProjectsService {
