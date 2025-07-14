@@ -1,44 +1,48 @@
 import {
   Controller,
   Get,
-  Req,
   Res,
   Query,
   Session,
   BadRequestException,
   InternalServerErrorException,
 } from '@nestjs/common';
-import { Request } from 'express';
 import { randomUUID } from 'crypto';
+import { ConfigService } from '@nestjs/config';
 import { LinkedinService } from './linkedin.service';
 
 @Controller('auth')
 export class AuthController {
-  constructor(private readonly linkedinService: LinkedinService) {}
+  constructor(
+    private readonly linkedinService: LinkedinService,
+    private readonly configService: ConfigService,
+  ) {}
 
   @Get('linkedin')
   async linkedinAuth(@Session() session: Record<string, any>, @Res() res: any) {
+    const clientId = this.configService.get<string>('LINKEDIN_CLIENT_ID');
+    const redirectUri = this.configService.get<string>('LINKEDIN_REDIRECT_URI');
     const state = randomUUID();
     session.linkedinState = state;
 
     const redirectUrl =
       `https://www.linkedin.com/oauth/v2/authorization` +
       `?response_type=code` +
-      `&client_id=${process.env.LINKEDIN_CLIENT_ID}` +
-      `&redirect_uri=${encodeURIComponent('http://localhost:3000/auth/linkedin/callback')}` +
+      `&client_id=${clientId}` +
+      `&redirect_uri=${redirectUri}` +
       `&state=${state}` +
       `&scope=openid%20profile%20email`;
 
-    return res.redirect(redirectUrl); // tu zostawiamy ręczny redirect
+    return res.redirect(redirectUrl);
   }
 
   @Get('linkedin/callback')
   async linkedinCallback(
     @Query('code') code: string,
     @Query('state') state: string,
-    @Req() req: Request,
+    @Session() session: Record<string, any>,
   ) {
-    if (state !== req.session.linkedinState) {
+    if (state !== session.linkedinState) {
       throw new BadRequestException('Invalid state parameter');
     }
 
@@ -55,4 +59,4 @@ export class AuthController {
       throw new InternalServerErrorException('Błąd logowania przez LinkedIn.');
     }
   }
-}
+} 

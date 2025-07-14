@@ -2,7 +2,7 @@ model User {
   id          Int        @id @default(autoincrement())
   linkedinId  String?    @unique
   firstName   String
-  lastName    String
+  lastName    String  
   email       String?    @unique
   description String?
   gitUrl      String?

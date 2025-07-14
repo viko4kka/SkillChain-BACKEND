@@ -3,13 +3,16 @@ import { AppModule } from './app.module';
 import * as session from 'express-session';
 import * as passport from 'passport';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
+import { ConfigService } from '@nestjs/config';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+  const configService = app.get(ConfigService);
+  
 
   app.use(
     session({
-      secret: process.env.LINKEDIN_CLIENT_SECRET!, 
+      secret: configService.get<string>('LINKEDIN_CLIENT_SECRET') || 'default_secret', 
       resave: false,
       saveUninitialized: false,
       cookie: {
@@ -30,6 +33,6 @@ async function bootstrap() {
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, document);
 
-  await app.listen(process.env.PORT ?? 3000);
+  await app.listen(configService.get<number>('PORT') || 3000);
 }
 bootstrap();

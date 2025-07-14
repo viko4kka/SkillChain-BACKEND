@@ -4,9 +4,11 @@ import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
 import { UserModule } from '../users/user.module';
 import { LinkedinService } from './linkedin.service';
+import { HttpModule } from '@nestjs/axios';
 
 @Module({
   imports: [
+    HttpModule,
     UserModule,
     JwtModule.register({
       secret: process.env.JWT_SECRET || 'supersecret',

@@ -1,5 +1,4 @@
-// language.controller.ts
-import { Controller, Get, Param } from '@nestjs/common';
+import { Controller, Get } from '@nestjs/common';
 import { LanguageService } from './language.service';
 import { ApiOkResponse } from '@nestjs/swagger';
 
