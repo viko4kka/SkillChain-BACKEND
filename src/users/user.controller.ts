@@ -30,7 +30,7 @@ export class UserController {
 
   @ApiOkResponse({
     description: 'Updates user profile by ID',
-    type: [UserDto],
+    type: [UpdateUserProfileDto],
   })
   @Patch(':id/profile')
   @UsePipes()

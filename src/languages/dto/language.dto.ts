@@ -3,16 +3,13 @@ import { Exclude } from 'class-transformer';
 import { IsInt, IsString } from 'class-validator';
 
 export class LanguageDto {
-  @ApiProperty({ description: 'Unique identifier for the language' })
-  @IsInt()
+  @ApiProperty({ description: 'Unique identifier for the language', type: Number })
   @Exclude()
   id: number;
 
-  @ApiProperty({ description: 'Language' })
-  @IsString()
+  @ApiProperty({ description: 'Language', type: String })
   name: string;
 
-  @ApiProperty({ description: 'Users id' })
-  @IsInt()
-  userId: string;
+  @ApiProperty({ description: 'Users id', type: Number })
+  userId: number;
 }
