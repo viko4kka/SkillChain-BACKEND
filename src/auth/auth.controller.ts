@@ -54,8 +54,6 @@ export class AuthController {
       const accessToken = await this.linkedinService.exchangeCodeForToken(code);
       const userInfo = await this.linkedinService.fetchUserInfo(accessToken);
 
-      console.log('LinkedIn user info:', userInfo);
-
       const { user } = await this.authService.validateOAuthLogin({
         linkedinId: userInfo.sub,
         firstName: userInfo.given_name,
@@ -79,9 +77,6 @@ export class AuthController {
   @Get('me')
   @UseGuards(AuthGuard)
   async getMe(@Session() session: Record<string, any>) {
-    if (!session.user) {
-      throw new BadRequestException('Brak zalogowanego użytkownika');
-    }
     return session.user;
   }
 }

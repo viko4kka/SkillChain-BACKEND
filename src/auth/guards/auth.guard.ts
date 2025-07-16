@@ -1,9 +1,12 @@
-import { Injectable, CanActivate, ExecutionContext } from '@nestjs/common';
+import { Injectable, CanActivate, ExecutionContext, ForbiddenException } from '@nestjs/common';
 
 @Injectable()
 export class AuthGuard implements CanActivate {
   canActivate(context: ExecutionContext): boolean {
     const request = context.switchToHttp().getRequest();
-    return !!request.session?.user;
+        if (!request.session?.user) {
+      throw new ForbiddenException('Brak dostępu: użytkownik niezalogowany');
+    }
+    return true;
   }
 }
