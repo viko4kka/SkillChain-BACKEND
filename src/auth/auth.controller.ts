@@ -64,13 +64,10 @@ export class AuthController {
 
       session.user = user;
 
-      return {
-        message: 'Zalogowano przez LinkedIn!',
-        user,
-      };
+      return { user };
     } catch (error) {
       console.error('LinkedIn callback error:', error?.response?.data || error);
-      throw new InternalServerErrorException('Błąd logowania przez LinkedIn.');
+      throw new InternalServerErrorException('LinkedIn login error');
     }
   }
 

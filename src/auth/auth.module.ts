@@ -7,10 +7,7 @@ import { HttpModule } from '@nestjs/axios';
 import { AuthGuard } from './guards/auth.guard';
 
 @Module({
-  imports: [
-    HttpModule,
-    UserModule,
-  ],
+  imports: [HttpModule, UserModule],
   controllers: [AuthController],
   providers: [AuthService, LinkedinService, AuthGuard],
 })

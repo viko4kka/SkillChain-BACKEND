@@ -9,15 +9,14 @@ import { ValidationPipe } from '@nestjs/common';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   const configService = app.get(ConfigService);
-  
 
   app.use(
     session({
-      secret: configService.get<string>('LINKEDIN_CLIENT_SECRET') || 'default_secret', 
+      secret: configService.get<string>('LINKEDIN_CLIENT_SECRET') || 'default_secret',
       resave: false,
       saveUninitialized: false,
       cookie: {
-        maxAge: 3600000, 
+        maxAge: 3600000,
       },
     }),
   );
