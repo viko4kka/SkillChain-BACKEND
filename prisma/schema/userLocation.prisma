@@ -1,0 +1,9 @@
+model UserLocation {
+    userId     Int
+    locationId Int
+
+    user     User     @relation(fields: [userId], references: [id])
+    location Location @relation(fields: [locationId], references: [id])
+
+    @@id([userId, locationId])
+}

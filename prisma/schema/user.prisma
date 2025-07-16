@@ -8,5 +8,6 @@ model User {
     gitUrl        String?
     linkedinUrl   String?
     userLanguages UserLanguage[]
+    userLocations UserLocation[]
     projects      Project[]
 }
