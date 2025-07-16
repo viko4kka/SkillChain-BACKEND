@@ -52,11 +52,16 @@ export class UserService {
     });
   }
   // Get languages assigned to a user
-  async getUserLanguages(userId: number): Promise<string[]> {
+  async getUserLanguages(userId: number): Promise<{ id: number; name: string }[]> {
     const userLanguages = await this.prisma.userLanguage.findMany({
       where: { userId },
       include: { language: true },
     });
-    return userLanguages.map(ul => ul.language?.name).filter(name => !!name);
+    return userLanguages
+      .filter(ul => ul.language)
+      .map(ul => ({
+        id: ul.language.id,
+        name: ul.language.name,
+      }));
   }
 }
