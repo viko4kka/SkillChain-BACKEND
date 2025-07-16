@@ -5,4 +5,5 @@ model Project {
     description String
     githubLink  String?
     websiteLink String?
+    user User @relation(fields: [idUser], references: [id])
 }
