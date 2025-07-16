@@ -41,4 +41,22 @@ export class UserService {
       data,
     });
   }
+
+  // Assign a language to a user
+  async assignLanguageToUser(userId: number, languageId: number): Promise<void> {
+    await this.prisma.userLanguage.create({
+      data: {
+        userId,
+        languageId,
+      },
+    });
+  }
+  // Get languages assigned to a user
+  async getUserLanguages(userId: number): Promise<string[]> {
+    const userLanguages = await this.prisma.userLanguage.findMany({
+      where: { userId },
+      include: { language: true },
+    });
+    return userLanguages.map(ul => ul.language?.name).filter(name => !!name);
+  }
 }

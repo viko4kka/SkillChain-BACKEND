@@ -1,4 +1,4 @@
-import { Controller, Get, Patch, Param, Body, UsePipes, ParseIntPipe } from '@nestjs/common';
+import { Controller, Get, Patch, Param, Body, UsePipes, ParseIntPipe, Post } from '@nestjs/common';
 import { UserService } from './user.service';
 import { UserDto } from './dto/users.dto';
 import { ApiOkResponse } from '@nestjs/swagger';
@@ -39,5 +39,19 @@ export class UserController {
     @Body() updateUserDto: UpdateUserProfileDto,
   ) {
     return this.userService.updateProfile(id, updateUserDto);
+  }
+
+  @Post(':id/language/:languageId')
+  async assignLanguageToUser(
+    @Param('id', ParseIntPipe) userId: number,
+    @Param('languageId', ParseIntPipe) languageId: number,
+  ) {
+    await this.userService.assignLanguageToUser(userId, languageId);
+    return { message: 'Language assigned to user successfully' };
+  }
+
+  @Get(':id/languages')
+  async getUserLanguages(@Param('id', ParseIntPipe) userId: number) {
+    return await this.userService.getUserLanguages(userId);
   }
 }
