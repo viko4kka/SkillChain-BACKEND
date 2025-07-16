@@ -11,5 +11,6 @@ model User {
     linkedinUrl   String?
     userSkills   UserSkill[]
     userLanguages UserLanguage[]
+    userLocations UserLocation[]
     projects      Project[]
 }
