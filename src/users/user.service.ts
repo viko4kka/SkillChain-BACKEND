@@ -35,7 +35,7 @@ export class UserService {
     return plainToInstance(UserDto, createdUser);
   }
 
-  async updateProfile(id: number, data: UpdateUserProfileDto) {
+  async updateProfile(id: number, data: UpdateUserProfileDto): Promise<UserDto> {
     return this.prisma.user.update({
       where: { id },
       data,

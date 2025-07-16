@@ -1,4 +1,4 @@
-import { Controller, Get, Patch, Param, Body, UsePipes } from '@nestjs/common';
+import { Controller, Get, Patch, Param, Body, UsePipes, ParseIntPipe } from '@nestjs/common';
 import { UserService } from './user.service';
 import { UserDto } from './dto/users.dto';
 import { ApiOkResponse } from '@nestjs/swagger';
@@ -23,14 +23,21 @@ export class UserController {
     type: [UserDto],
   })
   @Get(':id')
-  async findOneUser(@Param('id') id: string) {
-    const users = await this.userService.findOneUser(+id);
+  async findOneUser(@Param('id', ParseIntPipe) id: number) {
+    const users = await this.userService.findOneUser(id);
     return users;
   }
 
+  @ApiOkResponse({
+    description: 'Updates user profile by ID',
+    type: [UpdateUserProfileDto],
+  })
   @Patch(':id/profile')
   @UsePipes()
-  updateProfile(@Param('id') id: string, @Body() updateUserDto: UpdateUserProfileDto) {
-    return this.userService.updateProfile(+id, updateUserDto);
+  updateProfile(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() updateUserDto: UpdateUserProfileDto,
+  ) {
+    return this.userService.updateProfile(id, updateUserDto);
   }
 }
