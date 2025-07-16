@@ -1,34 +1,34 @@
 import { Injectable } from '@nestjs/common';
 import { UserService } from '../users/user.service';
-import { JwtService } from '@nestjs/jwt';
 
 @Injectable()
 export class AuthService {
   constructor(
     private usersService: UserService,
-    private jwtService: JwtService,
   ) {}
 
-  async validateOAuthLogin(profile: { linkedinId: string; name: string; email: string }) {
+  async validateOAuthLogin(profile: { 
+    linkedinId: string;
+    firstName: string;
+    lastName: string;
+    email: string;
+    imgUrl?: string;
+   }) {
     let user = await this.usersService.findByLinkedinId(profile.linkedinId);
 
     if (!user) {
-      const [firstName, ...lastNameParts] = profile.name.split(' ');
-      const lastName = lastNameParts.join(' ');
 
       const createUserInput = {
         linkedinId: profile.linkedinId,
-        firstName,
-        lastName,
+        firstName: profile.firstName,
+        lastName: profile.lastName,
         email: profile.email,
+        imgUrl: profile.imgUrl ?? null,
       };
 
       user = await this.usersService.create(createUserInput);
     }
 
-    const payload = { sub: user.id, email: user.email };
-    const access_token = this.jwtService.sign(payload);
-
-    return { user, access_token };
+    return { user };
   }
 }
