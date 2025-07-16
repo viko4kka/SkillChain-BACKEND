@@ -9,7 +9,4 @@ export class LanguageDto {
 
   @ApiProperty({ description: 'Language', type: String })
   name: string;
-
-  @ApiProperty({ description: 'Users id', type: Number })
-  userId: number;
 }

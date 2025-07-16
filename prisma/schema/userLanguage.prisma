@@ -1,0 +1,9 @@
+model UserLanguage {
+    userId     Int
+    languageId Int
+
+    user     User     @relation(fields: [userId], references: [id])
+    language Language @relation(fields: [languageId], references: [id])
+
+    @@id([userId, languageId])
+}
