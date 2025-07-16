@@ -1,2 +1,2 @@
--- Aktywacja pg_trgm
+-- Activation pg_trgm
 CREATE EXTENSION IF NOT EXISTS pg_trgm;
