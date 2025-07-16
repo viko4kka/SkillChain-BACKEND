@@ -59,4 +59,4 @@ export class AuthController {
       throw new InternalServerErrorException('Błąd logowania przez LinkedIn.');
     }
   }
-} 
+}

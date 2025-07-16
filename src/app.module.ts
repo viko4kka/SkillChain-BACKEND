@@ -8,6 +8,7 @@ import { AppController } from './app.controller';
 import { PrismaModule } from 'prisma/prisma.module';
 import { ProjectsModule } from './projects/projects.module';
 import { LanguageModule } from './languages/language.module';
+import { SearchModule } from './search/search.module';
 
 @Module({
   imports: [
@@ -17,9 +18,10 @@ import { LanguageModule } from './languages/language.module';
     AuthModule,
     ProjectsModule,
     LanguageModule,
-    PrismaModule
+    PrismaModule,
+    SearchModule,
   ],
   controllers: [AppController],
   providers: [AppService],
-  })
+})
 export class AppModule {}

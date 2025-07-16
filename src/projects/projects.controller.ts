@@ -2,7 +2,6 @@ import { Controller, Get, HttpCode } from '@nestjs/common';
 import { ProjectsService } from './projects.service';
 import { ProjectDto } from './dto/project.dto';
 import { ApiOkResponse } from '@nestjs/swagger';
-import { instanceToPlain } from 'class-transformer';
 
 @Controller('projects')
 export class ProjectsController {
