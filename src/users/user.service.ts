@@ -4,6 +4,7 @@ import { UserDto } from './dto/users.dto';
 import { plainToInstance } from 'class-transformer';
 import { CreateUserInput } from './dto/create-user.dto';
 import { UpdateUserProfileDto } from './dto/update-use-profile.dto';
+import { LanguageDto } from 'src/languages/dto/language.dto';
 
 @Injectable()
 export class UserService {
@@ -52,7 +53,7 @@ export class UserService {
     });
   }
   // Get languages assigned to a user
-  async getUserLanguages(userId: number): Promise<{ id: number; name: string }[]> {
+  async getUserLanguages(userId: number): Promise<LanguageDto[]> {
     const userLanguages = await this.prisma.userLanguage.findMany({
       where: { userId },
       include: { language: true },
