@@ -8,7 +8,6 @@ import { AppController } from './app.controller';
 import { PrismaModule } from 'prisma/prisma.module';
 import { ProjectsModule } from './projects/projects.module';
 import { LanguageModule } from './languages/language.module';
-import { SearchModule } from './search/search.module';
 
 @Module({
   imports: [
@@ -19,7 +18,6 @@ import { SearchModule } from './search/search.module';
     ProjectsModule,
     LanguageModule,
     PrismaModule,
-    SearchModule,
   ],
   controllers: [AppController],
   providers: [AppService],

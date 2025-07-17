@@ -1,5 +1,16 @@
-import { Controller, Get, Patch, Param, Body, UsePipes, ParseIntPipe, Post } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Patch,
+  Param,
+  Body,
+  UsePipes,
+  ParseIntPipe,
+  Post,
+  Query,
+} from '@nestjs/common';
 import { UserService } from './user.service';
+import { GetUsersQueryDto } from './dto/get-users.dto';
 import { UserDto } from './dto/users.dto';
 import { ApiOkResponse } from '@nestjs/swagger';
 import { UpdateUserProfileDto } from './dto/update-use-profile.dto';
@@ -13,9 +24,8 @@ export class UserController {
     type: [UserDto],
   })
   @Get()
-  async findAllUsers() {
-    const users = await this.userService.findAllUsers();
-    return users;
+  async getUsers(@Query() getUsersQueryDto: GetUsersQueryDto) {
+    return await this.userService.getUsers(getUsersQueryDto);
   }
 
   @ApiOkResponse({
