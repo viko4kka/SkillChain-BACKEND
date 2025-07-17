@@ -19,8 +19,8 @@ export class SearchService {
         linkedinUrl: string | null;
       }>
     >(
-      `SELECT id, "firstName", "lastName", "email", job, description, gitUrl, linkedinUrl
-      FROM "User" WHERE similarity("firstName", $1) > 0.3 OR similarity("lastName", $1) > 0.3
+      `SELECT id, "firstName", "lastName", "email", "job", "description", "gitUrl", "linkedinUrl"
+      FROM "User" WHERE similarity("firstName", $1) > 0.2 OR similarity("lastName", $1) > 0.2
       ORDER BY GREATEST(similarity("firstName", $1), similarity("lastName", $1)) DESC`,
       q,
     );
