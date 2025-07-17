@@ -43,14 +43,6 @@ export class UserController {
     return await this.userService.getUserLanguages(userId);
   }
   // LOCATIONS enpoints
-  @Post(':id/location/:locationId')
-  async assignLocationToUser(
-    @Param('id', ParseIntPipe) userId: number,
-    @Param('locationId', ParseIntPipe) locationId: number,
-  ) {
-    await this.userService.assignLocationToUser(userId, locationId);
-    return { message: 'Location assigned to user successfully' };
-  }
   @ApiOkResponse({
     description: 'Returns all locations',
     type: [LocationDto],
@@ -59,9 +51,18 @@ export class UserController {
   async getAllLocations() {
     return await this.userService.getAllLocations();
   }
-  @Get(':id/locations')
-  async getUserLocations(@Param('id', ParseIntPipe) userId: number) {
-    return await this.userService.getUserLocations(userId);
+
+  @ApiOkResponse({
+    description: 'Updates user location',
+    type: [LocationDto],
+  })
+  @Patch(':id/location/:locationId')
+  async updateLocation(
+    @Param('id', ParseIntPipe) userId: number,
+    @Param('locationId', ParseIntPipe) locationId: number,
+  ) {
+    await this.userService.updateLocation(userId, locationId);
+    return { message: 'Location updated successfully' };
   }
 
   // USERS endpoints
