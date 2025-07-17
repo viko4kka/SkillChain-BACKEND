@@ -17,9 +17,9 @@ import { LanguageModule } from './languages/language.module';
     AuthModule,
     ProjectsModule,
     LanguageModule,
-    PrismaModule
+    PrismaModule,
   ],
   controllers: [AppController],
   providers: [AppService],
-  })
+})
 export class AppModule {}

@@ -4,11 +4,14 @@ import {
   Res,
   Query,
   Session,
+  UseGuards,
   BadRequestException,
   InternalServerErrorException,
 } from '@nestjs/common';
 import { randomUUID } from 'crypto';
+import { AuthGuard } from './guards/auth.guard';
 import { ConfigService } from '@nestjs/config';
+import { AuthService } from './auth.service';
 import { LinkedinService } from './linkedin.service';
 
 @Controller('auth')
@@ -16,6 +19,7 @@ export class AuthController {
   constructor(
     private readonly linkedinService: LinkedinService,
     private readonly configService: ConfigService,
+    private readonly authService: AuthService,
   ) {}
 
   @Get('linkedin')
@@ -48,15 +52,28 @@ export class AuthController {
 
     try {
       const accessToken = await this.linkedinService.exchangeCodeForToken(code);
-      const user = await this.linkedinService.fetchUserInfo(accessToken);
+      const userInfo = await this.linkedinService.fetchUserInfo(accessToken);
 
-      return {
-        message: 'Zalogowano przez LinkedIn!',
-        user,
-      };
+      const { user } = await this.authService.validateOAuthLogin({
+        linkedinId: userInfo.sub,
+        firstName: userInfo.given_name,
+        lastName: userInfo.family_name,
+        email: userInfo.email,
+        imgUrl: userInfo.picture,
+      });
+
+      session.user = user;
+
+      return { user };
     } catch (error) {
       console.error('LinkedIn callback error:', error?.response?.data || error);
-      throw new InternalServerErrorException('Błąd logowania przez LinkedIn.');
+      throw new InternalServerErrorException('LinkedIn login error');
     }
   }
-} 
+
+  @Get('me')
+  @UseGuards(AuthGuard)
+  async getMe(@Session() session: Record<string, any>) {
+    return session.user;
+  }
+}
