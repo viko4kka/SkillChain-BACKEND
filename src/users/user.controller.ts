@@ -76,6 +76,7 @@ export class UserController {
     return await this.userService.getAllSkills();
   }
 
+  // USERS endpoints
   @ApiOkResponse({
     description: 'Returns all users',
     type: [UserDto],

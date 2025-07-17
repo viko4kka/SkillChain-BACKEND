@@ -103,6 +103,7 @@ export class UserService {
     const skills = await this.prisma.skill.findMany();
     return plainToInstance(SkillDto, skills);
   }
+
   // LOCATION methods
   // Returns all locations
   async getAllLocations(paginationDTO: PaginationDto): Promise<LocationDto[]> {
