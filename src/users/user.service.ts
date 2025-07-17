@@ -4,7 +4,7 @@ import { UserDto } from './dto/users.dto';
 import { plainToInstance } from 'class-transformer';
 import { CreateUserInput } from './dto/create-user.dto';
 import { UpdateUserProfileDto } from './dto/update-use-profile.dto';
-import { LanguageDto } from 'src/languages/dto/language.dto';
+import { LanguageDto } from './dto/language.dto';
 import { LocationDto } from './dto/location.dto';
 
 @Injectable()
