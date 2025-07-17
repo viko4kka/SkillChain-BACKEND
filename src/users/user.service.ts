@@ -6,6 +6,9 @@ import { CreateUserInput } from './dto/create-user.dto';
 import { UpdateUserProfileDto } from './dto/update-use-profile.dto';
 import { LanguageDto } from './dto/language.dto';
 import { LocationDto } from './dto/location.dto';
+import { PaginationDto } from './dto/pagination.dto';
+
+const DEFAULT_PAGE_SIZE = 5;
 
 @Injectable()
 export class UserService {
@@ -75,8 +78,11 @@ export class UserService {
 
   // LOCATION methods
   // Returns all locations
-  async getAllLocations(): Promise<LocationDto[]> {
-    const locations = await this.prisma.location.findMany();
+  async getAllLocations(paginationDTO: PaginationDto): Promise<LocationDto[]> {
+    const locations = await this.prisma.location.findMany({
+      skip: paginationDTO.skip,
+      take: paginationDTO.limit ?? DEFAULT_PAGE_SIZE,
+    });
     return plainToInstance(LocationDto, locations);
   }
   async updateLocation(userId: number, locationId: number): Promise<void> {
