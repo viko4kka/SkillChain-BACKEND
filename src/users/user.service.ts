@@ -7,6 +7,7 @@ import { GetUsersQueryDto } from './dto/get-users.dto';
 import { UpdateUserProfileDto } from './dto/update-use-profile.dto';
 import { LanguageDto } from 'src/languages/dto/language.dto';
 import { SkillDto } from 'src/users/dto/skill.dto';
+import { LocationDto } from './dto/location.dto';
 
 @Injectable()
 export class UserService {
@@ -98,5 +99,33 @@ export class UserService {
   async getAllSkills(): Promise<SkillDto[]> {
     const skills = await this.prisma.skill.findMany();
     return plainToInstance(SkillDto, skills);
+  }
+  // LOCATION methods
+  // Assign a location to a user
+  async assignLocationToUser(userId: number, locationId: number): Promise<void> {
+    await this.prisma.userLocation.create({
+      data: {
+        userId,
+        locationId,
+      },
+    });
+  }
+  // Get locations assigned to a user
+  async getUserLocations(userId: number): Promise<LocationDto[]> {
+    const userLanguages = await this.prisma.userLocation.findMany({
+      where: { userId },
+      include: { location: true },
+    });
+    return userLanguages
+      .filter(ul => ul.location)
+      .map(ul => ({
+        id: ul.location.id,
+        name: ul.location.name,
+      }));
+  }
+  // Returns all locations
+  async getAllLocations(): Promise<LocationDto[]> {
+    const locations = await this.prisma.location.findMany();
+    return plainToInstance(LocationDto, locations);
   }
 }

@@ -16,6 +16,7 @@ import { ApiOkResponse } from '@nestjs/swagger';
 import { UpdateUserProfileDto } from './dto/update-use-profile.dto';
 import { SkillDto } from 'src/users/dto/skill.dto';
 import { LanguageDto } from 'src/languages/dto/language.dto';
+import { LocationDto } from './dto/location.dto';
 
 @Controller('users')
 export class UserController {
@@ -41,6 +42,29 @@ export class UserController {
   async getUserLanguages(@Param('id', ParseIntPipe) userId: number) {
     return await this.userService.getUserLanguages(userId);
   }
+  // LOCATIONS enpoints
+  @Post(':id/location/:locationId')
+  async assignLocationToUser(
+    @Param('id', ParseIntPipe) userId: number,
+    @Param('locationId', ParseIntPipe) locationId: number,
+  ) {
+    await this.userService.assignLocationToUser(userId, locationId);
+    return { message: 'Location assigned to user successfully' };
+  }
+  @ApiOkResponse({
+    description: 'Returns all locations',
+    type: [LocationDto],
+  })
+  @Get('locations')
+  async getAllLocations() {
+    return await this.userService.getAllLocations();
+  }
+  @Get(':id/locations')
+  async getUserLocations(@Param('id', ParseIntPipe) userId: number) {
+    return await this.userService.getUserLocations(userId);
+  }
+
+  // USERS endpoints
   @ApiOkResponse({
     description: 'Returns all skills',
     type: [SkillDto],
