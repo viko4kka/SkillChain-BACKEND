@@ -14,10 +14,20 @@ import { GetUsersQueryDto } from './dto/get-users.dto';
 import { UserDto } from './dto/users.dto';
 import { ApiOkResponse } from '@nestjs/swagger';
 import { UpdateUserProfileDto } from './dto/update-use-profile.dto';
+import { SkillDto } from 'src/users/dto/skill.dto';
 
 @Controller('users')
 export class UserController {
   constructor(private readonly userService: UserService) {}
+
+  @ApiOkResponse({
+    description: 'Returns all skills',
+    type: [SkillDto],
+  })
+  @Get('/skills')
+  async getAllSkills() {
+    return await this.userService.getAllSkills();
+  }
 
   @ApiOkResponse({
     description: 'Returns all users',
