@@ -3,6 +3,8 @@ model User {
     linkedinId    String?        @unique
     firstName     String
     lastName      String
+    imgUrl        String?
+    email         String?
     description   String?
     job           String?
     gitUrl        String?

@@ -1,21 +1,14 @@
 import { Module } from '@nestjs/common';
-import { JwtModule } from '@nestjs/jwt';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
 import { UserModule } from '../users/user.module';
 import { LinkedinService } from './linkedin.service';
 import { HttpModule } from '@nestjs/axios';
+import { AuthGuard } from './guards/auth.guard';
 
 @Module({
-  imports: [
-    HttpModule,
-    UserModule,
-    JwtModule.register({
-      secret: process.env.JWT_SECRET || 'supersecret',
-      signOptions: { expiresIn: '1d' },
-    }),
-  ],
+  imports: [HttpModule, UserModule],
   controllers: [AuthController],
-  providers: [AuthService, LinkedinService],
+  providers: [AuthService, LinkedinService, AuthGuard],
 })
 export class AuthModule {}
