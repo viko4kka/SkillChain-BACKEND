@@ -1,5 +1,5 @@
 model Location {
-    id           Int            @id @default(autoincrement())
-    name         String
-    userLocation UserLocation[]
+    id   Int    @id @default(autoincrement())
+    name String
+    User User[]
 }
