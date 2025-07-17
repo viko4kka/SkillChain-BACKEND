@@ -10,6 +10,7 @@ model User {
     gitUrl        String?
     linkedinUrl   String?
     userLanguages UserLanguage[]
-    userLocations UserLocation[]
+    locationId    Int?
+    location      Location?      @relation(fields: [locationId], references: [id])
     projects      Project[]
 }
