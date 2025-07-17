@@ -17,6 +17,7 @@ import { UpdateUserProfileDto } from './dto/update-use-profile.dto';
 import { SkillDto } from 'src/users/dto/skill.dto';
 import { LanguageDto } from 'src/users/dto/language.dto';
 import { LocationDto } from './dto/location.dto';
+import { PaginationDto } from './dto/pagination.dto';
 
 @Controller('users')
 export class UserController {
@@ -48,8 +49,8 @@ export class UserController {
     type: [LocationDto],
   })
   @Get('locations')
-  async getAllLocations() {
-    return await this.userService.getAllLocations();
+  async getAllLocations(@Query() paginationDTO: PaginationDto) {
+    return await this.userService.getAllLocations(paginationDTO);
   }
 
   @ApiOkResponse({
