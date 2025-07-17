@@ -22,7 +22,7 @@ export class ProjectsService {
     });
   }
 
-  async getProjectDataById(id: number) {
+  async getProjectDataById(id: number): Promise<ProjectDto | null> {
     return this.prisma.project.findUnique({ where: { id } });
   }
 }

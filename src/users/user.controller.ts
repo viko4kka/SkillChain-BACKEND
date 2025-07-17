@@ -1,4 +1,4 @@
-import { Controller, Get, Patch, Param, Body, UsePipes } from '@nestjs/common';
+import { Controller, Get, Patch, Param, Body, UsePipes, ParseIntPipe, Post } from '@nestjs/common';
 import { UserService } from './user.service';
 import { UserDto } from './dto/users.dto';
 import { ApiOkResponse } from '@nestjs/swagger';
@@ -23,14 +23,35 @@ export class UserController {
     type: [UserDto],
   })
   @Get(':id')
-  async findOneUser(@Param('id') id: string) {
-    const users = await this.userService.findOneUser(+id);
+  async findOneUser(@Param('id', ParseIntPipe) id: number) {
+    const users = await this.userService.findOneUser(id);
     return users;
   }
 
+  @ApiOkResponse({
+    description: 'Updates user profile by ID',
+    type: [UpdateUserProfileDto],
+  })
   @Patch(':id/profile')
   @UsePipes()
-  updateProfile(@Param('id') id: string, @Body() updateUserDto: UpdateUserProfileDto) {
-    return this.userService.updateProfile(+id, updateUserDto);
+  updateProfile(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() updateUserDto: UpdateUserProfileDto,
+  ) {
+    return this.userService.updateProfile(id, updateUserDto);
+  }
+
+  @Post(':id/language/:languageId')
+  async assignLanguageToUser(
+    @Param('id', ParseIntPipe) userId: number,
+    @Param('languageId', ParseIntPipe) languageId: number,
+  ) {
+    await this.userService.assignLanguageToUser(userId, languageId);
+    return { message: 'Language assigned to user successfully' };
+  }
+
+  @Get(':id/languages')
+  async getUserLanguages(@Param('id', ParseIntPipe) userId: number) {
+    return await this.userService.getUserLanguages(userId);
   }
 }

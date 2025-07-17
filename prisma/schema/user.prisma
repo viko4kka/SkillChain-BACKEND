@@ -1,12 +1,14 @@
 model User {
-    id          Int        @id @default(autoincrement())
-    linkedinId  String?    @unique
-    firstName   String
-    lastName    String
-    description String?
-    job         String?
-    gitUrl      String?
-    linkedinUrl String?
-    languages   Language[]
-    projects    Project[]
+    id            Int            @id @default(autoincrement())
+    linkedinId    String?        @unique
+    firstName     String
+    lastName      String
+    imgUrl        String?
+    email         String?
+    description   String?
+    job           String?
+    gitUrl        String?
+    linkedinUrl   String?
+    userLanguages UserLanguage[]
+    projects      Project[]
 }

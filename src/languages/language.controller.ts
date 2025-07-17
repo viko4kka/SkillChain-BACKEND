@@ -1,6 +1,7 @@
 import { Controller, Get } from '@nestjs/common';
 import { LanguageService } from './language.service';
 import { ApiOkResponse } from '@nestjs/swagger';
+import { LanguageDto } from './dto/language.dto';
 
 @Controller('/languages')
 export class LanguageController {
@@ -8,9 +9,10 @@ export class LanguageController {
 
   @ApiOkResponse({
     description: 'Returns all users',
+    type: [LanguageDto],
   })
   @Get()
-  findAll() {
+  async findAll() {
     return this.languageService.findAllLanguages();
   }
 }
