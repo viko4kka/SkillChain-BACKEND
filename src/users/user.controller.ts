@@ -8,7 +8,27 @@ import { LanguageDto } from 'src/languages/dto/language.dto';
 @Controller('users')
 export class UserController {
   constructor(private readonly userService: UserService) {}
-
+  // LANGUAGES enpoints
+  @Post(':id/language/:languageId')
+  async assignLanguageToUser(
+    @Param('id', ParseIntPipe) userId: number,
+    @Param('languageId', ParseIntPipe) languageId: number,
+  ) {
+    await this.userService.assignLanguageToUser(userId, languageId);
+    return { message: 'Language assigned to user successfully' };
+  }
+  @ApiOkResponse({
+    description: 'Returns all languages',
+    type: [LanguageDto],
+  })
+  @Get('languages')
+  async getAllLanguages() {
+    return await this.userService.getAllLanguages();
+  }
+  @Get(':id/languages')
+  async getUserLanguages(@Param('id', ParseIntPipe) userId: number) {
+    return await this.userService.getUserLanguages(userId);
+  }
   @ApiOkResponse({
     description: 'Returns all users',
     type: [UserDto],
@@ -40,27 +60,5 @@ export class UserController {
     @Body() updateUserDto: UpdateUserProfileDto,
   ) {
     return this.userService.updateProfile(id, updateUserDto);
-  }
-
-  // LANGUAGES enpoints
-  @Post(':id/language/:languageId')
-  async assignLanguageToUser(
-    @Param('id', ParseIntPipe) userId: number,
-    @Param('languageId', ParseIntPipe) languageId: number,
-  ) {
-    await this.userService.assignLanguageToUser(userId, languageId);
-    return { message: 'Language assigned to user successfully' };
-  }
-  @ApiOkResponse({
-    description: 'Returns all languages',
-    type: [LanguageDto],
-  })
-  @Get('languages')
-  async getAllLanguages() {
-    return await this.userService.getAllLanguages();
-  }
-  @Get(':id/languages')
-  async getUserLanguages(@Param('id', ParseIntPipe) userId: number) {
-    return await this.userService.getUserLanguages(userId);
   }
 }
