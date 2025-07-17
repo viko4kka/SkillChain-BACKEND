@@ -1,7 +1,6 @@
 -- CreateTable
 CREATE TABLE "UserSkill" (
     "skillId" INTEGER NOT NULL,
-    "skillName" TEXT NOT NULL,
     "description" TEXT,
     "userId" INTEGER NOT NULL,
 

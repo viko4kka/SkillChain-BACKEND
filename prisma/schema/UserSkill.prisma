@@ -1,6 +1,5 @@
 model UserSkill {
   skillId     Int    
-  skillName   String
   description String?
   userId Int
   user   User   @relation(fields: [userId], references: [id])
