@@ -5,6 +5,7 @@ import { plainToInstance } from 'class-transformer';
 import { CreateUserInput } from './dto/create-user.dto';
 import { UpdateUserProfileDto } from './dto/update-use-profile.dto';
 import { LanguageDto } from 'src/languages/dto/language.dto';
+import { SkillDto } from 'src/users/dto/skill.dto';
 
 @Injectable()
 export class UserService {
@@ -64,5 +65,11 @@ export class UserService {
         id: ul.language.id,
         name: ul.language.name,
       }));
+  }
+
+  // Returns all skills
+  async getAllSkills(): Promise<SkillDto[]> {
+    const skills = await this.prisma.skill.findMany();
+    return plainToInstance(SkillDto, skills);
   }
 }
