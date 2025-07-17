@@ -2,7 +2,7 @@ import { Controller, Get, Patch, Param, Body, UsePipes, ParseIntPipe, Post } fro
 import { UserService } from './user.service';
 import { UserDto } from './dto/users.dto';
 import { ApiOkResponse } from '@nestjs/swagger';
-import { UpdateUserProfileDto } from './dto/update-use-profile.dto';
+import { UpdateUserProfileDto } from './dto/updateUserProfile.dto';
 
 @Controller('users')
 export class UserController {

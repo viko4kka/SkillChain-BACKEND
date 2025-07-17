@@ -2,8 +2,8 @@ import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'prisma/prisma.service';
 import { UserDto } from './dto/users.dto';
 import { plainToInstance } from 'class-transformer';
-import { CreateUserInput } from './dto/create-user.dto';
-import { UpdateUserProfileDto } from './dto/update-use-profile.dto';
+import { CreateUserInput } from './interfaces/createUserInput.interface';
+import { UpdateUserProfileDto } from './dto/updateUserProfile.dto';
 import { LanguageDto } from 'src/languages/dto/language.dto';
 
 @Injectable()
