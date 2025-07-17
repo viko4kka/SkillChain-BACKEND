@@ -1,21 +1,41 @@
-import { Controller, Get, Patch, Param, Body, UsePipes, ParseIntPipe, Post } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Patch,
+  Param,
+  Body,
+  UsePipes,
+  ParseIntPipe,
+  Post,
+  Query,
+} from '@nestjs/common';
 import { UserService } from './user.service';
+import { GetUsersQueryDto } from './dto/getUsers.dto';
 import { UserDto } from './dto/users.dto';
 import { ApiOkResponse } from '@nestjs/swagger';
 import { UpdateUserProfileDto } from './dto/updateUserProfile.dto';
+import { SkillDto } from 'src/users/dto/skill.dto';
 
 @Controller('users')
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
   @ApiOkResponse({
+    description: 'Returns all skills',
+    type: [SkillDto],
+  })
+  @Get('/skills')
+  async getAllSkills() {
+    return await this.userService.getAllSkills();
+  }
+
+  @ApiOkResponse({
     description: 'Returns all users',
     type: [UserDto],
   })
   @Get()
-  async findAllUsers() {
-    const users = await this.userService.findAllUsers();
-    return users;
+  async getUsers(@Query() getUsersQueryDto: GetUsersQueryDto) {
+    return await this.userService.getUsers(getUsersQueryDto);
   }
 
   @ApiOkResponse({

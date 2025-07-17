@@ -4,15 +4,38 @@ import { UserDto } from './dto/users.dto';
 import { plainToInstance } from 'class-transformer';
 import { CreateUserInput } from './interfaces/createUserInput.interface';
 import { UpdateUserProfileDto } from './dto/updateUserProfile.dto';
+import { GetUsersQueryDto } from './dto/getUsers.dto';
 import { LanguageDto } from 'src/languages/dto/language.dto';
+import { SkillDto } from 'src/users/dto/skill.dto';
 
 @Injectable()
 export class UserService {
   constructor(private readonly prisma: PrismaService) {}
 
-  async findAllUsers(): Promise<UserDto[]> {
-    const users = await this.prisma.user.findMany();
-    return plainToInstance(UserDto, users);
+  async getUsers(query: GetUsersQueryDto): Promise<UserDto[]> {
+    if (query.search) {
+      const users = await this.prisma.$queryRawUnsafe<
+        Array<{
+          id: number;
+          firstName: string;
+          lastName: string;
+          email?: string;
+          job: string | null;
+          description: string | null;
+          gitUrl: string | null;
+          linkedinUrl: string | null;
+        }>
+      >(
+        `SELECT id, "firstName", "lastName", "email", "job", "description", "gitUrl", "linkedinUrl"
+      FROM "User" WHERE similarity("firstName", $1) > 0.2 OR similarity("lastName", $1) > 0.2
+      ORDER BY GREATEST(similarity("firstName", $1), similarity("lastName", $1)) DESC`,
+        query.search,
+      );
+      return plainToInstance(UserDto, users);
+    } else {
+      const users = await this.prisma.user.findMany();
+      return plainToInstance(UserDto, users);
+    }
   }
 
   async findOneUser(id: number): Promise<UserDto | null> {
@@ -64,5 +87,11 @@ export class UserService {
         id: ul.language.id,
         name: ul.language.name,
       }));
+  }
+
+  // Returns all skills
+  async getAllSkills(): Promise<SkillDto[]> {
+    const skills = await this.prisma.skill.findMany();
+    return plainToInstance(SkillDto, skills);
   }
 }
