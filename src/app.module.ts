@@ -7,7 +7,6 @@ import { AppService } from './app.service';
 import { AppController } from './app.controller';
 import { PrismaModule } from 'prisma/prisma.module';
 import { ProjectsModule } from './projects/projects.module';
-import { LanguageModule } from './languages/language.module';
 
 @Module({
   imports: [
@@ -16,7 +15,6 @@ import { LanguageModule } from './languages/language.module';
     UserModule,
     AuthModule,
     ProjectsModule,
-    LanguageModule,
     PrismaModule,
   ],
   controllers: [AppController],

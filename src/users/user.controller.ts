@@ -15,7 +15,7 @@ import { UserDto } from './dto/users.dto';
 import { ApiOkResponse } from '@nestjs/swagger';
 import { UpdateUserProfileDto } from './dto/update-use-profile.dto';
 import { SkillDto } from 'src/users/dto/skill.dto';
-import { LanguageDto } from 'src/languages/dto/language.dto';
+import { LanguageDto } from 'src/users/dto/language.dto';
 import { LocationDto } from './dto/location.dto';
 
 @Controller('users')
