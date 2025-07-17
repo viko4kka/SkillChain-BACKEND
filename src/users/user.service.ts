@@ -74,31 +74,15 @@ export class UserService {
   }
 
   // LOCATION methods
-  // Assign a location to a user
-  async assignLocationToUser(userId: number, locationId: number): Promise<void> {
-    await this.prisma.userLocation.create({
-      data: {
-        userId,
-        locationId,
-      },
-    });
-  }
-  // Get locations assigned to a user
-  async getUserLocations(userId: number): Promise<LocationDto[]> {
-    const userLanguages = await this.prisma.userLocation.findMany({
-      where: { userId },
-      include: { location: true },
-    });
-    return userLanguages
-      .filter(ul => ul.location)
-      .map(ul => ({
-        id: ul.location.id,
-        name: ul.location.name,
-      }));
-  }
   // Returns all locations
   async getAllLocations(): Promise<LocationDto[]> {
     const locations = await this.prisma.location.findMany();
     return plainToInstance(LocationDto, locations);
+  }
+  async updateLocation(userId: number, locationId: number): Promise<void> {
+    await this.prisma.user.update({
+      where: { id: userId },
+      data: { locationId },
+    });
   }
 }
