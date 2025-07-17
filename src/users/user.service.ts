@@ -43,6 +43,7 @@ export class UserService {
     });
   }
 
+  // LANGUAGES methods
   // Assign a language to a user
   async assignLanguageToUser(userId: number, languageId: number): Promise<void> {
     await this.prisma.userLanguage.create({
@@ -64,5 +65,10 @@ export class UserService {
         id: ul.language.id,
         name: ul.language.name,
       }));
+  }
+
+  async getAllLanguages(): Promise<LanguageDto[]> {
+    const languages = await this.prisma.language.findMany();
+    return plainToInstance(LanguageDto, languages);
   }
 }
