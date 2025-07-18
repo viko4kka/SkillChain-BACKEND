@@ -24,7 +24,8 @@
     "prisma:migrate:create": "prisma migrate dev --create-only --name",
     "prisma:migrate": "prisma migrate deploy",
     "prisma:migrate:dev": "prisma migrate dev && npm run prisma:generate && npm run prisma:seed",
-    "prisma:reset": "prisma migrate reset -f "
+    "prisma:reset": "prisma migrate reset -f ",
+    "seed": "prisma db seed"
   },
   "dependencies": {
     "@nestjs/axios": "^4.0.0",
@@ -79,7 +80,7 @@
     "ts-loader": "^9.5.2",
     "ts-node": "^10.9.2",
     "tsconfig-paths": "^4.2.0",
-    "typescript": "^5.7.3",
+    "typescript": "^5.8.3",
     "typescript-eslint": "^8.20.0"
   },
   "jest": {
@@ -100,6 +101,7 @@
     "testEnvironment": "node"
   },
   "prisma": {
-    "schema": "./prisma/schema/"
+    "schema": "./prisma/schema/",
+    "seed": "ts-node --transpile-only prisma/seed.ts"
   }
 }
