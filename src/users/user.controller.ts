@@ -14,9 +14,9 @@ import { GetUsersQueryDto } from './dto/get-users.dto';
 import { UserDto } from './dto/users.dto';
 import { ApiOkResponse } from '@nestjs/swagger';
 import { UpdateUserProfileDto } from './dto/update-use-profile.dto';
-import { SkillDto } from 'src/users/dto/skill.dto';
-import { LanguageDto } from 'src/users/dto/language.dto';
-import { LocationDto } from './dto/location.dto';
+import { SkillDto } from 'src/common/dto/skill.dto';
+import { LanguageDto } from 'src/common/dto/language.dto';
+import { LocationDto } from '../common/dto/location.dto';
 import { PaginationDto } from './dto/pagination.dto';
 
 @Controller('users')
@@ -31,28 +31,12 @@ export class UserController {
     await this.userService.assignLanguageToUser(userId, languageId);
     return { message: 'Language assigned to user successfully' };
   }
-  @ApiOkResponse({
-    description: 'Returns all languages',
-    type: [LanguageDto],
-  })
-  @Get('languages')
-  async getAllLanguages() {
-    return await this.userService.getAllLanguages();
-  }
+
   @Get(':id/languages')
   async getUserLanguages(@Param('id', ParseIntPipe) userId: number) {
     return await this.userService.getUserLanguages(userId);
   }
   // LOCATIONS enpoints
-  @ApiOkResponse({
-    description: 'Returns all locations',
-    type: [LocationDto],
-  })
-  @Get('locations')
-  async getAllLocations(@Query() paginationDTO: PaginationDto) {
-    return await this.userService.getAllLocations(paginationDTO);
-  }
-
   @ApiOkResponse({
     description: 'Updates user location',
     type: [LocationDto],
@@ -64,16 +48,6 @@ export class UserController {
   ) {
     await this.userService.updateLocation(userId, locationId);
     return { message: 'Location updated successfully' };
-  }
-
-  // USERS endpoints
-  @ApiOkResponse({
-    description: 'Returns all skills',
-    type: [SkillDto],
-  })
-  @Get('/skills')
-  async getAllSkills() {
-    return await this.userService.getAllSkills();
   }
 
   // USERS endpoints
