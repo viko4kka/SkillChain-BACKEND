@@ -10,10 +10,10 @@ import {
   Query,
 } from '@nestjs/common';
 import { UserService } from './user.service';
-import { GetUsersQueryDto } from './dto/get-users.dto';
+import { GetUsersQueryDto } from './dto/getUsers.dto';
 import { UserDto } from './dto/users.dto';
 import { ApiOkResponse } from '@nestjs/swagger';
-import { UpdateUserProfileDto } from './dto/update-use-profile.dto';
+import { UpdateUserProfileDto } from './dto/updateUserProfile.dto';
 import { SkillDto } from 'src/users/dto/skill.dto';
 
 @Controller('users')
