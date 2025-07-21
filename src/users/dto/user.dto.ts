@@ -1,9 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Exclude } from 'class-transformer';
 
 export class UserDto {
   @ApiProperty({ description: 'Unique identifier for the user', type: Number })
-  @Exclude()
   id: number;
 
   @ApiProperty({ description: 'First name of the user', type: String })
@@ -30,4 +28,10 @@ export class UserDto {
 
   @ApiProperty({ description: 'Link to the users LinkedIn profile', type: String, required: false })
   linkedinUrl: string | null;
+
+  @ApiProperty({ description: 'LinkedIn visits counter', type: Number, required: false })
+  linkedinVisits: number;
+
+  @ApiProperty({ description: 'Github visits counter', type: Number, required: false })
+  githubVisits: number;
 }

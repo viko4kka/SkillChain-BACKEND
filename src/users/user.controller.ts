@@ -1,8 +1,23 @@
-import { Controller, Get, Patch, Param, Body, UsePipes, ParseIntPipe, Query } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Patch,
+  Param,
+  Body,
+  UsePipes,
+  Session,
+  UseGuards,
+  ParseIntPipe,
+  Post,
+  Query,
+  BadRequestException,
+} from '@nestjs/common';
 import { UserService } from './user.service';
 import { GetUsersQueryDto } from './dto/getUsers.dto';
-import { UserDto } from './dto/users.dto';
+import { UserDto } from './dto/user.dto';
 import { ApiOkResponse } from '@nestjs/swagger';
+import { SessionData } from 'express-session';
+import { AuthGuard } from '../auth/guards/auth.guard';
 import { UpdateUserProfileDto } from './dto/updateUserProfile.dto';
 
 @Controller('users')
@@ -45,5 +60,19 @@ export class UserController {
     @Body() updateUserDto: UpdateUserProfileDto,
   ) {
     return this.userService.updateProfile(id, updateUserDto);
+  }
+
+  @Post('visits-inc/:userId/:type')
+  @UseGuards(AuthGuard)
+  async incrementVisits(
+    @Session() session: SessionData,
+    @Param('userId', ParseIntPipe) userId: number,
+    @Param('type') type: 'linkedin' | 'github',
+  ) {
+    if (session.user?.id === userId) {
+      throw new BadRequestException('You cannot increment your own visits');
+    }
+    await this.userService.incrementVisits(userId, type);
+    return { message: `${type} visits incremented` };
   }
 }

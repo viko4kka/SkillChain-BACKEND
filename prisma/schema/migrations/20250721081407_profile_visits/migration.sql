@@ -1,0 +1,3 @@
+-- AlterTable
+ALTER TABLE "User" ADD COLUMN     "githubVisits" INTEGER NOT NULL DEFAULT 0,
+ADD COLUMN     "linkedinVisits" INTEGER NOT NULL DEFAULT 0;

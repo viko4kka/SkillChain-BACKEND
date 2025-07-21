@@ -1,4 +1,4 @@
-import { UserDto } from 'src/users/dto/users.dto';
+import { UserDto } from 'src/users/dto/user.dto';
 import 'express-session';
 
 declare module 'express-session' {
