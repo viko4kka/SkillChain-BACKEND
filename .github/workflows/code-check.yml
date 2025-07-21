@@ -1,0 +1,27 @@
+name: Check linter & formatting
+
+on:
+  pull_request:
+    types: [opened, synchronize]
+
+jobs:
+  format_and_lint:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run Lint
+        run: npm run lint
+
+      - name: Run Prettier
+        run: npm run prettier

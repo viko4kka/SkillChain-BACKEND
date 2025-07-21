@@ -1,6 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Exclude } from 'class-transformer';
-import { IsInt, IsNotEmpty, IsOptional, IsString, IsUrl } from 'class-validator';
 
 export class ProjectDto {
   @ApiProperty({ description: 'Unique identifier for the project', type: Number })

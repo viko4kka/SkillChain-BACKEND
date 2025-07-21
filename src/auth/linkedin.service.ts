@@ -3,6 +3,8 @@ import { ConfigService } from '@nestjs/config';
 import { HttpService } from '@nestjs/axios';
 import { AxiosResponse } from 'axios';
 import { firstValueFrom } from 'rxjs';
+import { LinkedInUserInfo } from './interfaces/linkedinUserInfo.interface';
+import { LinkedInTokenResponse } from './interfaces/linkedinTokenResponse.interface';
 
 @Injectable()
 export class LinkedinService {
@@ -24,7 +26,7 @@ export class LinkedinService {
       client_secret: clientSecret!,
     };
 
-    const response: AxiosResponse = await firstValueFrom(
+    const response: AxiosResponse<LinkedInTokenResponse> = await firstValueFrom(
       this.httpService.post(
         'https://www.linkedin.com/oauth/v2/accessToken',
         new URLSearchParams(params),
@@ -37,8 +39,8 @@ export class LinkedinService {
     return response.data.access_token;
   }
 
-  async fetchUserInfo(accessToken: string): Promise<any> {
-    const response: AxiosResponse = await firstValueFrom(
+  async fetchUserInfo(accessToken: string): Promise<LinkedInUserInfo> {
+    const response: AxiosResponse<LinkedInUserInfo> = await firstValueFrom(
       this.httpService.get('https://api.linkedin.com/v2/userinfo', {
         headers: {
           Authorization: `Bearer ${accessToken}`,
