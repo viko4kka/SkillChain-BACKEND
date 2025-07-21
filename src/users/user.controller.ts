@@ -19,21 +19,17 @@ import { ApiOkResponse } from '@nestjs/swagger';
 import { SessionData } from 'express-session';
 import { AuthGuard } from '../auth/guards/auth.guard';
 import { UpdateUserProfileDto } from './dto/updateUserProfile.dto';
-import { SkillDto } from 'src/users/dto/skill.dto';
 
 @Controller('users')
 export class UserController {
   constructor(private readonly userService: UserService) {}
-
-  @ApiOkResponse({
-    description: 'Returns all skills',
-    type: [SkillDto],
-  })
-  @Get('/skills')
-  async getAllSkills() {
-    return await this.userService.getAllSkills();
+  // LANGUAGES enpoints
+  @Get(':id/languages')
+  async getUserLanguages(@Param('id', ParseIntPipe) userId: number) {
+    return await this.userService.getUserLanguages(userId);
   }
 
+  // USERS endpoints
   @ApiOkResponse({
     description: 'Returns all users',
     type: [UserDto],
@@ -66,20 +62,6 @@ export class UserController {
     return this.userService.updateProfile(id, updateUserDto);
   }
 
-  @Post(':id/language/:languageId')
-  async assignLanguageToUser(
-    @Param('id', ParseIntPipe) userId: number,
-    @Param('languageId', ParseIntPipe) languageId: number,
-  ) {
-    await this.userService.assignLanguageToUser(userId, languageId);
-    return { message: 'Language assigned to user successfully' };
-  }
-
-  @Get(':id/languages')
-  async getUserLanguages(@Param('id', ParseIntPipe) userId: number) {
-    return await this.userService.getUserLanguages(userId);
-  }
-
   @Post('visits-inc/:userId/:type')
   @UseGuards(AuthGuard)
   async incrementVisits(
@@ -88,7 +70,7 @@ export class UserController {
     @Param('type') type: 'linkedin' | 'github',
   ) {
     if (session.user?.id === userId) {
-      throw new BadRequestException( 'You cannot increment your own visits' );
+      throw new BadRequestException('You cannot increment your own visits');
     }
     await this.userService.incrementVisits(userId, type);
     return { message: `${type} visits incremented` };

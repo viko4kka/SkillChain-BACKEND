@@ -11,6 +11,8 @@ model User {
     linkedinUrl   String?
     userSkills    UserSkill[]
     userLanguages UserLanguage[]
+    locationId    Int?
+    location      Location?      @relation(fields: [locationId], references: [id])
     projects      Project[]
     linkedinVisits Int @default(0)
     githubVisits   Int @default(0)

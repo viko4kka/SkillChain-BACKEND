@@ -5,8 +5,7 @@ import { plainToInstance } from 'class-transformer';
 import { CreateUserInput } from './interfaces/createUserInput.interface';
 import { UpdateUserProfileDto } from './dto/updateUserProfile.dto';
 import { GetUsersQueryDto } from './dto/getUsers.dto';
-import { LanguageDto } from 'src/languages/dto/language.dto';
-import { SkillDto } from 'src/users/dto/skill.dto';
+import { LanguageDto } from '../common/dto/language.dto';
 
 @Injectable()
 export class UserService {
@@ -70,15 +69,7 @@ export class UserService {
     });
   }
 
-  // Assign a language to a user
-  async assignLanguageToUser(userId: number, languageId: number): Promise<void> {
-    await this.prisma.userLanguage.create({
-      data: {
-        userId,
-        languageId,
-      },
-    });
-  }
+  // LANGUAGES methods
   // Get languages assigned to a user
   async getUserLanguages(userId: number): Promise<LanguageDto[]> {
     const userLanguages = await this.prisma.userLanguage.findMany({
@@ -91,12 +82,6 @@ export class UserService {
         id: ul.language.id,
         name: ul.language.name,
       }));
-  }
-
-  // Returns all skills
-  async getAllSkills(): Promise<SkillDto[]> {
-    const skills = await this.prisma.skill.findMany();
-    return plainToInstance(SkillDto, skills);
   }
 
   async incrementVisits(userId: number, type: 'linkedin' | 'github'): Promise<void> {
