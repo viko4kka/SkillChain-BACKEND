@@ -88,7 +88,7 @@ export class UserController {
     @Param('type') type: 'linkedin' | 'github',
   ) {
     if (session.user?.id === userId) {
-      throw new BadRequestException({ message: 'You cannot increment your own visits' });
+      throw new BadRequestException( 'You cannot increment your own visits' );
     }
     await this.userService.incrementVisits(userId, type);
     return { message: `${type} visits incremented` };
