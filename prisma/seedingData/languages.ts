@@ -29,4 +29,34 @@ export const languages = [
   {
     name: 'Japanese',
   },
+  {
+    name: 'Korean',
+  },
+  {
+    name: 'Arabic',
+  },
+  {
+    name: 'Hindi',
+  },
+  {
+    name: 'Turkish',
+  },
+  {
+    name: 'Dutch',
+  },
+  {
+    name: 'Swedish',
+  },
+  {
+    name: 'Norwegian',
+  },
+  {
+    name: 'Greek',
+  },
+  {
+    name: 'Czech',
+  },
+  {
+    name: 'Hungarian',
+  },
 ];
