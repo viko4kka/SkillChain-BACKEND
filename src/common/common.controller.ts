@@ -13,7 +13,7 @@ export class CommonController {
   // LANGUAGES
   @ApiOkResponse({
     description: 'Returns all languages',
-    type: [PaginatedLanguagesDto],
+    type: PaginatedLanguagesDto,
   })
   @Get('languages')
   async getAllLanguages(@Query() paginationQuery: PaginationQueryFilter) {

@@ -14,17 +14,11 @@ const DEFAULT_PAGE_SIZE = 5;
 export class CommonService {
   constructor(private readonly prisma: PrismaService) {}
   // Languages
-  async getAllLanguages(paginationDto: PaginationQueryFilter): Promise<LanguageDto[]> {
-    const languagesWhereQuery: Prisma.LanguageWhereInput = {
-      name: {
-        //contains: paginationDto.search || '',
-        mode: 'insensitive',
-      },
-    };
-    const languagesCount = await this.prisma.language.count();
+  async getAllLanguages(paginationDto: PaginationQueryFilter) {
+    const totalCount = await this.prisma.language.count();
 
     const paginationService = new PaginationService({
-      itemsCount: languagesCount,
+      itemsCount: totalCount,
       page: paginationDto.page,
       perPage: paginationDto.perPage,
     });
@@ -32,7 +26,7 @@ export class CommonService {
     const languages = await this.prisma.language.findMany({
       ...paginationService.getPaginationParams(),
     });
-    return plainToInstance(LanguageDto, languages);
+    return { items: plainToInstance(LanguageDto, languages), totalCount };
   }
   // Skills
   async getAllSkills(): Promise<SkillDto[]> {
