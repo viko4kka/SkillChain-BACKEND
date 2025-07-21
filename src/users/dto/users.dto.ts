@@ -1,6 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Exclude } from 'class-transformer';
-import { IsEmail, IsInt, IsOptional, IsString } from 'class-validator';
 
 export class UserDto {
   @ApiProperty({ description: 'Unique identifier for the user', type: Number })

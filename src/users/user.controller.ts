@@ -1,34 +1,20 @@
-import {
-  Controller,
-  Get,
-  Patch,
-  Param,
-  Body,
-  UsePipes,
-  ParseIntPipe,
-  Post,
-  Query,
-} from '@nestjs/common';
+import { Controller, Get, Patch, Param, Body, UsePipes, ParseIntPipe, Query } from '@nestjs/common';
 import { UserService } from './user.service';
-import { GetUsersQueryDto } from './dto/get-users.dto';
+import { GetUsersQueryDto } from './dto/getUsers.dto';
 import { UserDto } from './dto/users.dto';
 import { ApiOkResponse } from '@nestjs/swagger';
-import { UpdateUserProfileDto } from './dto/update-use-profile.dto';
-import { SkillDto } from 'src/users/dto/skill.dto';
+import { UpdateUserProfileDto } from './dto/updateUserProfile.dto';
 
 @Controller('users')
 export class UserController {
   constructor(private readonly userService: UserService) {}
-
-  @ApiOkResponse({
-    description: 'Returns all skills',
-    type: [SkillDto],
-  })
-  @Get('/skills')
-  async getAllSkills() {
-    return await this.userService.getAllSkills();
+  // LANGUAGES enpoints
+  @Get(':id/languages')
+  async getUserLanguages(@Param('id', ParseIntPipe) userId: number) {
+    return await this.userService.getUserLanguages(userId);
   }
 
+  // USERS endpoints
   @ApiOkResponse({
     description: 'Returns all users',
     type: [UserDto],
@@ -59,19 +45,5 @@ export class UserController {
     @Body() updateUserDto: UpdateUserProfileDto,
   ) {
     return this.userService.updateProfile(id, updateUserDto);
-  }
-
-  @Post(':id/language/:languageId')
-  async assignLanguageToUser(
-    @Param('id', ParseIntPipe) userId: number,
-    @Param('languageId', ParseIntPipe) languageId: number,
-  ) {
-    await this.userService.assignLanguageToUser(userId, languageId);
-    return { message: 'Language assigned to user successfully' };
-  }
-
-  @Get(':id/languages')
-  async getUserLanguages(@Param('id', ParseIntPipe) userId: number) {
-    return await this.userService.getUserLanguages(userId);
   }
 }

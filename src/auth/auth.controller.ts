@@ -9,6 +9,9 @@ import {
   InternalServerErrorException,
 } from '@nestjs/common';
 import { randomUUID } from 'crypto';
+import { SessionData } from 'express-session';
+import { Response } from 'express';
+import { LinkedInUserInfo } from './interfaces/linkedinUserInfo.interface';
 import { AuthGuard } from './guards/auth.guard';
 import { ConfigService } from '@nestjs/config';
 import { AuthService } from './auth.service';
@@ -23,7 +26,7 @@ export class AuthController {
   ) {}
 
   @Get('linkedin')
-  async linkedinAuth(@Session() session: Record<string, any>, @Res() res: any) {
+  linkedinAuth(@Session() session: SessionData, @Res() res: Response) {
     const clientId = this.configService.get<string>('LINKEDIN_CLIENT_ID');
     const redirectUri = this.configService.get<string>('LINKEDIN_REDIRECT_URI');
     const state = randomUUID();
@@ -44,7 +47,7 @@ export class AuthController {
   async linkedinCallback(
     @Query('code') code: string,
     @Query('state') state: string,
-    @Session() session: Record<string, any>,
+    @Session() session: SessionData,
   ) {
     if (state !== session.linkedinState) {
       throw new BadRequestException('Invalid state parameter');
@@ -52,7 +55,7 @@ export class AuthController {
 
     try {
       const accessToken = await this.linkedinService.exchangeCodeForToken(code);
-      const userInfo = await this.linkedinService.fetchUserInfo(accessToken);
+      const userInfo: LinkedInUserInfo = await this.linkedinService.fetchUserInfo(accessToken);
 
       const { user } = await this.authService.validateOAuthLogin({
         linkedinId: userInfo.sub,
@@ -66,14 +69,14 @@ export class AuthController {
 
       return { user };
     } catch (error) {
-      console.error('LinkedIn callback error:', error?.response?.data || error);
+      console.error('LinkedIn callback error:', error);
       throw new InternalServerErrorException('LinkedIn login error');
     }
   }
 
   @Get('me')
   @UseGuards(AuthGuard)
-  async getMe(@Session() session: Record<string, any>) {
+  getMe(@Session() session: SessionData) {
     return session.user;
   }
 }
