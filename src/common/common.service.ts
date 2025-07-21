@@ -29,14 +29,37 @@ export class CommonService {
     };
   }
   // Skills
-  async getAllSkills(): Promise<SkillDto[]> {
-    const skills = await this.prisma.skill.findMany();
-    return plainToInstance(SkillDto, skills);
+  async getAllSkills(paginationDto: PaginationQueryFilter) {
+    const totalCount = await this.prisma.skill.count();
+
+    const paginationService = new PaginationService({
+      itemsCount: totalCount,
+      page: paginationDto.page,
+      perPage: paginationDto.perPage,
+    });
+
+    const skills = await this.prisma.skill.findMany({
+      ...paginationService.getPaginationParams(),
+    });
+    return { data: plainToInstance(SkillDto, skills), ...paginationService.getPaginationResult() };
   }
 
   // Locations
-  async getAllLocations(): Promise<LocationDto[]> {
-    const locations = await this.prisma.location.findMany();
-    return plainToInstance(LocationDto, locations);
+  async getAllLocations(paginationDto: PaginationQueryFilter) {
+    const totalCount = await this.prisma.location.count();
+
+    const paginationService = new PaginationService({
+      itemsCount: totalCount,
+      page: paginationDto.page,
+      perPage: paginationDto.perPage,
+    });
+
+    const locations = await this.prisma.location.findMany({
+      ...paginationService.getPaginationParams(),
+    });
+    return {
+      data: plainToInstance(LocationDto, locations),
+      ...paginationService.getPaginationResult(),
+    };
   }
 }

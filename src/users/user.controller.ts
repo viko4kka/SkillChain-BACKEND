@@ -1,20 +1,9 @@
-import {
-  Controller,
-  Get,
-  Patch,
-  Param,
-  Body,
-  UsePipes,
-  ParseIntPipe,
-  Post,
-  Query,
-} from '@nestjs/common';
+import { Controller, Get, Patch, Param, Body, UsePipes, ParseIntPipe, Query } from '@nestjs/common';
 import { UserService } from './user.service';
 import { GetUsersQueryDto } from './dto/getUsers.dto';
 import { UserDto } from './dto/users.dto';
 import { ApiOkResponse } from '@nestjs/swagger';
 import { UpdateUserProfileDto } from './dto/updateUserProfile.dto';
-import { LocationDto } from '../common/dto/location.dto';
 
 @Controller('users')
 export class UserController {

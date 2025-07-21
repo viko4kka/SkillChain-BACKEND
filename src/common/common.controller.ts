@@ -18,23 +18,22 @@ export class CommonController {
   async getAllLanguages(@Query() paginationQuery: PaginationQueryFilter) {
     return await this.commonService.getAllLanguages(paginationQuery);
   }
-
-  // LOCATIONS
-  @ApiOkResponse({
-    description: 'Returns all locations',
-    type: [LocationDto],
-  })
-  @Get('locations')
-  async getAllLocations() {
-    return await this.commonService.getAllLocations();
-  }
   // SKILLS
   @ApiOkResponse({
     description: 'Returns all skills',
-    type: [SkillDto],
+    type: SkillDto,
   })
   @Get('skills')
-  async getAllSkills() {
-    return await this.commonService.getAllSkills();
+  async getAllSkills(@Query() paginationQuery: PaginationQueryFilter) {
+    return await this.commonService.getAllSkills(paginationQuery);
+  }
+  // LOCATIONS
+  @ApiOkResponse({
+    description: 'Returns all locations',
+    type: LocationDto,
+  })
+  @Get('locations')
+  async getAllLocations(@Query() paginationQuery: PaginationQueryFilter) {
+    return await this.commonService.getAllLocations(paginationQuery);
   }
 }
