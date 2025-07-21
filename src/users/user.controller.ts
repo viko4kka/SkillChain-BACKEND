@@ -20,31 +20,9 @@ import { LocationDto } from '../common/dto/location.dto';
 export class UserController {
   constructor(private readonly userService: UserService) {}
   // LANGUAGES enpoints
-  @Post(':id/language/:languageId')
-  async assignLanguageToUser(
-    @Param('id', ParseIntPipe) userId: number,
-    @Param('languageId', ParseIntPipe) languageId: number,
-  ) {
-    await this.userService.assignLanguageToUser(userId, languageId);
-    return { message: 'Language assigned to user successfully' };
-  }
-
   @Get(':id/languages')
   async getUserLanguages(@Param('id', ParseIntPipe) userId: number) {
     return await this.userService.getUserLanguages(userId);
-  }
-  // LOCATIONS enpoints
-  @ApiOkResponse({
-    description: 'Updates user location',
-    type: [LocationDto],
-  })
-  @Patch(':id/location/:locationId')
-  async updateLocation(
-    @Param('id', ParseIntPipe) userId: number,
-    @Param('locationId', ParseIntPipe) locationId: number,
-  ) {
-    await this.userService.updateLocation(userId, locationId);
-    return { message: 'Location updated successfully' };
   }
 
   // USERS endpoints

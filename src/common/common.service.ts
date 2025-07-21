@@ -23,7 +23,10 @@ export class CommonService {
     const languages = await this.prisma.language.findMany({
       ...paginationService.getPaginationParams(),
     });
-    return { items: plainToInstance(LanguageDto, languages), totalCount };
+    return {
+      data: plainToInstance(LanguageDto, languages),
+      ...paginationService.getPaginationResult(),
+    };
   }
   // Skills
   async getAllSkills(): Promise<SkillDto[]> {
