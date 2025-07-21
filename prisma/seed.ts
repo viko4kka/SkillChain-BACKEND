@@ -7,14 +7,8 @@ import { locations } from './seedingData/locations';
 const prisma = new PrismaClient();
 
 async function main() {
-  //USERS table
-  await prisma.user.deleteMany(); // czysci tabele
-  await prisma.user.createMany({
-    data: users,
-  });
-
   //SKILLS table
-  await prisma.skill.deleteMany();
+  await prisma.skill.deleteMany(); // czysci tabele
   await prisma.skill.createMany({
     data: skills,
   });
@@ -29,6 +23,12 @@ async function main() {
   await prisma.location.deleteMany();
   await prisma.location.createMany({
     data: locations,
+  });
+
+  //USERS table
+  await prisma.user.deleteMany();
+  await prisma.user.createMany({
+    data: users,
   });
 }
 

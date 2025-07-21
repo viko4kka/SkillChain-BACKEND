@@ -8,6 +8,7 @@ export const users = [
     job: 'Frontend Developer',
     gitUrl: 'https://github.com/alicesmith',
     linkedinUrl: 'https://linkedin.com/in/alicesmith',
+    locationId: 1,
   },
   {
     linkedinId: '100000002',
@@ -18,6 +19,7 @@ export const users = [
     job: 'Backend Developer',
     gitUrl: 'https://github.com/bobjohnson',
     linkedinUrl: 'https://linkedin.com/in/bobjohnson',
+    locationId: 3,
   },
   {
     linkedinId: '100000003',
@@ -28,6 +30,7 @@ export const users = [
     job: 'Fullstack Developer',
     gitUrl: 'https://github.com/charliebrown',
     linkedinUrl: 'https://linkedin.com/in/charliebrown',
+    locationId: 5,
   },
   {
     linkedinId: '100000004',
@@ -38,6 +41,7 @@ export const users = [
     job: 'DevOps Engineer',
     gitUrl: 'https://github.com/dianaevans',
     linkedinUrl: 'https://linkedin.com/in/dianaevans',
+    locationId: 8,
   },
   {
     linkedinId: '100000005',
@@ -48,6 +52,7 @@ export const users = [
     job: 'Mobile Developer',
     gitUrl: 'https://github.com/ethanwright',
     linkedinUrl: 'https://linkedin.com/in/ethanwright',
+    locationId: 12,
   },
   {
     linkedinId: '100000006',
@@ -58,6 +63,7 @@ export const users = [
     job: 'QA Engineer',
     gitUrl: 'https://github.com/fionagreen',
     linkedinUrl: 'https://linkedin.com/in/fionagreen',
+    locationId: 4,
   },
   {
     linkedinId: '100000007',
@@ -68,6 +74,7 @@ export const users = [
     job: 'Game Developer',
     gitUrl: 'https://github.com/georgehill',
     linkedinUrl: 'https://linkedin.com/in/georgehill',
+    locationId: 15,
   },
   {
     linkedinId: '100000008',
@@ -78,6 +85,7 @@ export const users = [
     job: 'Data Scientist',
     gitUrl: 'https://github.com/hannahscott',
     linkedinUrl: 'https://linkedin.com/in/hannahscott',
+    locationId: 17,
   },
   {
     linkedinId: '100000009',
@@ -88,6 +96,7 @@ export const users = [
     job: 'Security Engineer',
     gitUrl: 'https://github.com/ianturner',
     linkedinUrl: 'https://linkedin.com/in/ianturner',
+    locationId: 10,
   },
   {
     linkedinId: '100000010',
@@ -98,5 +107,6 @@ export const users = [
     job: 'Tech Lead',
     gitUrl: 'https://github.com/juliamorris',
     linkedinUrl: 'https://linkedin.com/in/juliamorris',
+    locationId: 20,
   },
 ];
