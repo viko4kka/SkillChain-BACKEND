@@ -10,6 +10,7 @@ import {
   ParseIntPipe,
   Post,
   Query,
+  BadRequestException,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { GetUsersQueryDto } from './dto/getUsers.dto';
@@ -79,15 +80,15 @@ export class UserController {
     return await this.userService.getUserLanguages(userId);
   }
 
-  @Post('visits-inc/:type')
+  @Post('visits-inc/:userId/:type')
   @UseGuards(AuthGuard)
   async incrementVisits(
     @Session() session: SessionData,
+    @Param('userId', ParseIntPipe) userId: number,
     @Param('type') type: 'linkedin' | 'github',
   ) {
-    const userId = session.user?.id;
-    if (!userId) {
-      return { message: 'User not logged in' };
+    if (session.user?.id === userId) {
+      throw new BadRequestException({ message: 'You cannot increment your own visits' });
     }
     await this.userService.incrementVisits(userId, type);
     return { message: `${type} visits incremented` };
