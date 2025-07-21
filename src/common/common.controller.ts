@@ -2,9 +2,8 @@ import { Controller, Get, Query } from '@nestjs/common';
 import { CommonService } from './common.service';
 import { ApiOkResponse } from '@nestjs/swagger';
 import { SkillDto } from '../common/dto/skill.dto';
-import { LanguageDto } from '../common/dto/language.dto';
 import { LocationDto } from '../common/dto/location.dto';
-import { PaginatedLanguagesDto } from './dto/paging-languages.dto';
+import { PaginatedLanguagesDto } from './dto/pagingLanguages';
 import { PaginationQueryFilter } from 'src/utlis/dto/pagination.dto';
 
 @Controller('common')
