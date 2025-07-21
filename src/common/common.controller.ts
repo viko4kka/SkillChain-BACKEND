@@ -1,9 +1,9 @@
 import { Controller, Get, Query } from '@nestjs/common';
 import { CommonService } from './common.service';
 import { ApiOkResponse } from '@nestjs/swagger';
-import { SkillDto } from '../common/dto/skill.dto';
-import { LocationDto } from '../common/dto/location.dto';
-import { PaginatedLanguagesDto } from './dto/pagingLanguages';
+import { PaginatedLanguagesDto } from './dto/paginatedLanguages.dto';
+import { PaginatedSkillsDto } from './dto/paginatedSkills.dto';
+import { PaginatedLocationsDto } from './dto/paginatedLocations.dto';
 import { PaginationQueryFilter } from 'src/utlis/dto/pagination.dto';
 
 @Controller('common')
@@ -21,7 +21,7 @@ export class CommonController {
   // SKILLS
   @ApiOkResponse({
     description: 'Returns all skills',
-    type: SkillDto,
+    type: PaginatedSkillsDto,
   })
   @Get('skills')
   async getAllSkills(@Query() paginationQuery: PaginationQueryFilter) {
@@ -30,7 +30,7 @@ export class CommonController {
   // LOCATIONS
   @ApiOkResponse({
     description: 'Returns all locations',
-    type: LocationDto,
+    type: PaginatedLocationsDto,
   })
   @Get('locations')
   async getAllLocations(@Query() paginationQuery: PaginationQueryFilter) {
