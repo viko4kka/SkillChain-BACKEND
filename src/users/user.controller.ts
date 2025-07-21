@@ -13,11 +13,8 @@ import { UserService } from './user.service';
 import { GetUsersQueryDto } from './dto/getUsers.dto';
 import { UserDto } from './dto/users.dto';
 import { ApiOkResponse } from '@nestjs/swagger';
-import { UpdateUserProfileDto } from './dto/update-use-profile.dto';
-import { SkillDto } from 'src/common/dto/skill.dto';
-import { LanguageDto } from 'src/common/dto/language.dto';
+import { UpdateUserProfileDto } from './dto/updateUserProfile.dto';
 import { LocationDto } from '../common/dto/location.dto';
-import { PaginationDto } from './dto/pagination.dto';
 
 @Controller('users')
 export class UserController {

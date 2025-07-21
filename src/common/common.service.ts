@@ -6,9 +6,6 @@ import { LanguageDto } from '../common/dto/language.dto';
 import { LocationDto } from '../common/dto/location.dto';
 import { PaginationQueryFilter } from 'src/utlis/dto/pagination.dto';
 import { PaginationService } from 'src/utlis/pagination.service';
-import { Prisma } from '@prisma/client';
-
-const DEFAULT_PAGE_SIZE = 5;
 
 @Injectable()
 export class CommonService {

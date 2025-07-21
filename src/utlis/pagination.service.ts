@@ -5,10 +5,10 @@ export interface PaginationServiceProps {
 }
 
 export class PaginationService {
-  readonly #maxPage;
-  readonly #page;
-  readonly #perPage;
-  readonly #itemsCount;
+  readonly #maxPage: number;
+  readonly #page: number;
+  readonly #perPage: number;
+  readonly #itemsCount: number;
   constructor({ perPage, page, itemsCount }: PaginationServiceProps) {
     this.#itemsCount = itemsCount;
     this.#perPage = perPage;
