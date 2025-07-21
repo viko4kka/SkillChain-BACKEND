@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'prisma/prisma.service';
-import { UserDto } from './dto/users.dto';
+import { UserDto } from './dto/user.dto';
 import { plainToInstance } from 'class-transformer';
 import { CreateUserInput } from './interfaces/createUserInput.interface';
 import { UpdateUserProfileDto } from './dto/updateUserProfile.dto';
@@ -24,11 +24,16 @@ export class UserService {
           description: string | null;
           gitUrl: string | null;
           linkedinUrl: string | null;
+          linkedinVisits: number;
+          githubVisits: number;
+          linkedinId: string | null;
+          imgUrl: string | null;
         }>
       >(
-        `SELECT id, "firstName", "lastName", "email", "job", "description", "gitUrl", "linkedinUrl"
-      FROM "User" WHERE similarity("firstName", $1) > 0.2 OR similarity("lastName", $1) > 0.2
-      ORDER BY GREATEST(similarity("firstName", $1), similarity("lastName", $1)) DESC`,
+        `SELECT id, "firstName", "lastName", "email", "job", "description", "gitUrl", "linkedinUrl",
+        "linkedinVisits", "githubVisits", "linkedinId", "imgUrl"
+        FROM "User" WHERE similarity("firstName", $1) > 0.2 OR similarity("lastName", $1) > 0.2
+        ORDER BY GREATEST(similarity("firstName", $1), similarity("lastName", $1)) DESC`,
         query.search,
       );
       return plainToInstance(UserDto, users);
@@ -93,5 +98,19 @@ export class UserService {
   async getAllSkills(): Promise<SkillDto[]> {
     const skills = await this.prisma.skill.findMany();
     return plainToInstance(SkillDto, skills);
+  }
+
+  async incrementVisits(userId: number, type: 'linkedin' | 'github'): Promise<void> {
+    if (type === 'linkedin') {
+      await this.prisma.user.update({
+        where: { id: userId },
+        data: { linkedinVisits: { increment: 1 } },
+      });
+    } else if (type === 'github') {
+      await this.prisma.user.update({
+        where: { id: userId },
+        data: { githubVisits: { increment: 1 } },
+      });
+    }
   }
 }

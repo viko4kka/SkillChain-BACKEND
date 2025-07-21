@@ -9,7 +9,9 @@ model User {
     job           String?
     gitUrl        String?
     linkedinUrl   String?
-    userSkills   UserSkill[]
+    userSkills    UserSkill[]
     userLanguages UserLanguage[]
     projects      Project[]
+    linkedinVisits Int @default(0)
+    githubVisits   Int @default(0)
 }

@@ -5,14 +5,18 @@ import {
   Param,
   Body,
   UsePipes,
+  Session,
+  UseGuards,
   ParseIntPipe,
   Post,
   Query,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { GetUsersQueryDto } from './dto/getUsers.dto';
-import { UserDto } from './dto/users.dto';
+import { UserDto } from './dto/user.dto';
 import { ApiOkResponse } from '@nestjs/swagger';
+import { SessionData } from 'express-session';
+import { AuthGuard } from '../auth/guards/auth.guard';
 import { UpdateUserProfileDto } from './dto/updateUserProfile.dto';
 import { SkillDto } from 'src/users/dto/skill.dto';
 
@@ -73,5 +77,19 @@ export class UserController {
   @Get(':id/languages')
   async getUserLanguages(@Param('id', ParseIntPipe) userId: number) {
     return await this.userService.getUserLanguages(userId);
+  }
+
+  @Post('visits-inc/:type')
+  @UseGuards(AuthGuard)
+  async incrementVisits(
+    @Session() session: SessionData,
+    @Param('type') type: 'linkedin' | 'github',
+  ) {
+    const userId = session.user?.id;
+    if (!userId) {
+      return { message: 'User not logged in' };
+    }
+    await this.userService.incrementVisits(userId, type);
+    return { message: `${type} visits incremented` };
   }
 }
