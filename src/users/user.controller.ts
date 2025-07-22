@@ -29,8 +29,7 @@ export class UserController {
     return await this.userService.getUserLanguages(userId);
   }
   @ApiOkResponse({
-    description: 'Returns all users',
-    type: [UserDto],
+    description: 'Updates user languages',
   })
   @Post('languages')
   @UseGuards(AuthGuard)
