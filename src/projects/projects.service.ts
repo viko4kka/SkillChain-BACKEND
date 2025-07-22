@@ -1,9 +1,9 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, BadRequestException } from '@nestjs/common';
 import { Project } from '@prisma/client'; // This is the Prisma interface/type
 import { PrismaService } from 'prisma/prisma.service';
 import { ProjectDto } from './dto/project.dto';
 import { plainToInstance } from 'class-transformer';
-import { inputProjectDto } from './dto/inputProject.dto';
+import { InputProjectDto } from './dto/inputProject.dto';
 
 @Injectable()
 export class ProjectsService {
@@ -16,24 +16,33 @@ export class ProjectsService {
     return plainToInstance(ProjectDto, projects);
   }
 
-  async createProject(createProjectDto: inputProjectDto, userId: number): Promise<Project> {
-    return this.prisma.project.create({
+  async createProject(createProjectDto: InputProjectDto, userId: number): Promise<Project> {
+    const project = await this.prisma.project.create({
       data: {
         ...createProjectDto,
         idUser: userId,
       },
     });
+    return plainToInstance(ProjectDto, project);
   }
 
   async findOne(id: number): Promise<ProjectDto | null> {
-    return this.prisma.project.findUnique({ where: { id } });
+    const project = await this.prisma.project.findUnique({ where: { id } });
+    return project ? plainToInstance(ProjectDto, project) : null;
   }
 
   async updateProject(
     id: number,
-    updateProjectDto: inputProjectDto,
+    updateProjectDto: InputProjectDto,
     userId: number,
   ): Promise<ProjectDto> {
+    const project = await this.findOne(id);
+    if (!project) {
+      throw new BadRequestException('Project not found');
+    }
+    if (project.idUser !== userId) {
+      throw new BadRequestException('Cannot update other users projects');
+    }
     const updated = await this.prisma.project.update({
       where: { id },
       data: {
@@ -44,7 +53,14 @@ export class ProjectsService {
     return plainToInstance(ProjectDto, updated);
   }
 
-  async deleteProject(id: number): Promise<void> {
+  async deleteProject(id: number, userId: number): Promise<void> {
+    const project = await this.findOne(id);
+    if (!project) {
+      throw new BadRequestException('Project not found');
+    }
+    if (project.idUser !== userId) {
+      throw new BadRequestException('Cannot delete other users projects');
+    }
     await this.prisma.project.delete({ where: { id } });
   }
 }

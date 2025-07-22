@@ -6,7 +6,6 @@ export class ProjectDto {
   id: number;
 
   @ApiProperty({ description: 'User ID', type: Number })
-  @Exclude()
   idUser: number;
 
   @ApiProperty({ description: 'Name of the project', type: String })
