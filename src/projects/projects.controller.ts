@@ -35,10 +35,7 @@ export class ProjectsController {
   @UseGuards(AuthGuard)
   async createProject(@Session() session: SessionData, @Body() createProjectDto: inputProjectDto) {
     const userId = session.user?.id;
-    if (!userId) {
-      throw new BadRequestException('User not logged in');
-    }
-    return this.projectsService.createProject(createProjectDto, userId);
+    return this.projectsService.createProject(createProjectDto, userId!);
   }
 
   @Patch(':id')
@@ -49,9 +46,6 @@ export class ProjectsController {
     @Session() session: SessionData,
   ) {
     const userId = session.user?.id;
-    if (!userId) {
-      throw new BadRequestException('User not logged in');
-    }
     const project = await this.projectsService.findOne(id);
     if (!project || project.idUser !== userId) {
       throw new BadRequestException('Project not found or access denied');
@@ -63,9 +57,6 @@ export class ProjectsController {
   @UseGuards(AuthGuard)
   async deleteProject(@Param('id', ParseIntPipe) id: number, @Session() session: SessionData) {
     const userId = session.user?.id;
-    if (!userId) {
-      throw new BadRequestException('User not logged in');
-    }
     const project = await this.projectsService.findOne(id);
     if (!project || project.idUser !== userId) {
       throw new BadRequestException('Project not found or access denied');
