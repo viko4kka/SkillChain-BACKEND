@@ -115,4 +115,20 @@ export class UserService {
       })),
     });
   }
+
+  async setSkillsForUser(
+    userId: number,
+    skills: Array<{ skillId: number; description?: string }>,
+  ): Promise<void> {
+    await this.prisma.userSkill.deleteMany({ where: { userId } });
+    if (skills.length > 0) {
+      await this.prisma.userSkill.createMany({
+        data: skills.map(skill => ({
+          userId,
+          skillId: skill.skillId,
+          description: skill.description ?? null,
+        })),
+      });
+    }
+  }
 }
