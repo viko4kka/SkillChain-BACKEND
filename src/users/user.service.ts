@@ -84,6 +84,16 @@ export class UserService {
       }));
   }
 
+  // Post new language for a user
+  async updateUserLanguages(userId: number, languageIds: number[]): Promise<void> {
+    await this.prisma.userLanguage.deleteMany({ where: { userId } });
+    if (languageIds.length > 0) {
+      await this.prisma.userLanguage.createMany({
+        data: languageIds.map(languageId => ({ userId, languageId })),
+      });
+    }
+  }
+
   async incrementVisits(userId: number, type: 'linkedin' | 'github'): Promise<void> {
     if (type === 'linkedin') {
       await this.prisma.user.update({

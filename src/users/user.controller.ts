@@ -28,6 +28,20 @@ export class UserController {
   async getUserLanguages(@Param('id', ParseIntPipe) userId: number) {
     return await this.userService.getUserLanguages(userId);
   }
+  @ApiOkResponse({
+    description: 'Returns all users',
+    type: [UserDto],
+  })
+  @Post('languages')
+  @UseGuards(AuthGuard)
+  async updateUserLanguages(@Body() languageIds: number[], @Session() session: SessionData) {
+    const userId = session.user?.id;
+    if (!userId) {
+      throw new BadRequestException('User not logged in');
+    }
+    await this.userService.updateUserLanguages(userId, languageIds);
+    return { message: 'Languages updated successfully' };
+  }
 
   // USERS endpoints
   @ApiOkResponse({
