@@ -36,10 +36,7 @@ export class UserController {
   @UseGuards(AuthGuard)
   async updateUserLanguages(@Body() languageIds: number[], @Session() session: SessionData) {
     const userId = session.user?.id;
-    if (!userId) {
-      throw new BadRequestException('User not logged in');
-    }
-    await this.userService.updateUserLanguages(userId, languageIds);
+    await this.userService.updateUserLanguages(userId!, languageIds);
     return { message: 'Languages updated successfully' };
   }
 
