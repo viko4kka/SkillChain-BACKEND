@@ -17,6 +17,7 @@ import { GetUsersQueryDto } from './dto/getUsers.dto';
 import { UserDto } from './dto/user.dto';
 import { ApiOkResponse } from '@nestjs/swagger';
 import { SessionData } from 'express-session';
+import { UpdateUserSkillsDto } from './dto/updateUserSkills.dto';
 import { AuthGuard } from '../auth/guards/auth.guard';
 import { UpdateUserProfileDto } from './dto/updateUserProfile.dto';
 
@@ -74,5 +75,19 @@ export class UserController {
     }
     await this.userService.incrementVisits(userId, type);
     return { message: `${type} visits incremented` };
+  }
+
+  @Post('skills')
+  @UseGuards(AuthGuard)
+  async updateUserSkills(@Session() session: SessionData, @Body() body: UpdateUserSkillsDto) {
+    const userId = session.user?.id;
+    if (!userId) {
+      throw new BadRequestException('User not logged in');
+    }
+    await this.userService.deleteAllSkillsForUser(userId);
+    if (body.skills.length > 0) {
+      await this.userService.addSkillsForUser(userId, body.skills);
+    }
+    return { message: 'Skills updated' };
   }
 }
