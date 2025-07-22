@@ -80,10 +80,7 @@ export class UserController {
   @Post('skills')
   @UseGuards(AuthGuard)
   async updateUserSkills(@Session() session: SessionData, @Body() body: UpdateUserSkillsDto) {
-    const userId = session.user?.id;
-    if (!userId) {
-      throw new BadRequestException('User not logged in');
-    }
+    const userId = session.user?.id!;
     await this.userService.deleteAllSkillsForUser(userId);
     if (body.skills.length > 0) {
       await this.userService.addSkillsForUser(userId, body.skills);
