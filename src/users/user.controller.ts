@@ -46,7 +46,7 @@ export class UserController {
 
   @ApiOkResponse({
     description: 'Returns one user by ID',
-    type: UserDto
+    type: UserDto,
   })
   @Get(':id')
   async findOneUser(@Param('id', ParseIntPipe) id: number) {
