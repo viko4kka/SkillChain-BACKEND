@@ -98,8 +98,8 @@ export class UserService {
 
   async setSkillsForUser(
     userId: number,
-    skills: Array<{ skillId: number; description?: string }>,
-  ): Promise<void> {
+    skills: Array<{ skillId: number; description: string | null }>,
+  ): Promise<Array<{ skillId: number; description: string | null }>> {
     await this.prisma.userSkill.deleteMany({ where: { userId } });
     if (skills.length > 0) {
       await this.prisma.userSkill.createMany({
@@ -110,5 +110,9 @@ export class UserService {
         })),
       });
     }
+    return this.prisma.userSkill.findMany({
+      where: { userId },
+      select: { skillId: true, description: true },
+    });
   }
 }

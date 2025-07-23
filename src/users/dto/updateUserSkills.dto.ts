@@ -2,7 +2,7 @@ import { IsArray, ValidateNested, IsInt, IsOptional, IsString } from 'class-vali
 import { Type } from 'class-transformer';
 import { ApiProperty } from '@nestjs/swagger';
 
-class UserSkillInputDto {
+export class UserSkillInputDto {
   @ApiProperty({ description: 'The ID of the skill', type: Number })
   @IsInt()
   skillId: number;
@@ -10,7 +10,7 @@ class UserSkillInputDto {
   @ApiProperty({ description: 'The description of the skill', type: String, required: false })
   @IsOptional()
   @IsString()
-  description?: string;
+  description: string | null;
 }
 
 export class UpdateUserSkillsDto {

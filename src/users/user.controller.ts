@@ -17,7 +17,7 @@ import { GetUsersQueryDto } from './dto/getUsers.dto';
 import { UserDto } from './dto/user.dto';
 import { ApiOkResponse } from '@nestjs/swagger';
 import { SessionData } from 'express-session';
-import { UpdateUserSkillsDto } from './dto/updateUserSkills.dto';
+import { UpdateUserSkillsDto, UserSkillInputDto } from './dto/updateUserSkills.dto';
 import { AuthGuard } from '../auth/guards/auth.guard';
 import { UpdateUserProfileDto } from './dto/updateUserProfile.dto';
 import { LanguageDto } from 'src/common/dto/language.dto';
@@ -88,13 +88,12 @@ export class UserController {
 
   @ApiOkResponse({
     description: 'Sets skills for a user',
-    type: MessageResponseDto,
+    type: [UserSkillInputDto],
   })
   @Post('skills')
   @UseGuards(AuthGuard)
   async setSkillsForUser(@Session() session: SessionData, @Body() body: UpdateUserSkillsDto) {
     const userId = session.user?.id;
-    await this.userService.setSkillsForUser(userId!, body.skills);
-    return { message: 'Skills updated' };
+    return this.userService.setSkillsForUser(userId!, body.skills);
   }
 }
