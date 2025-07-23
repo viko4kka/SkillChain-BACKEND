@@ -99,7 +99,7 @@ export class UserService {
 
   async setSkillsForUser(
     userId: number,
-    skills: Array<{ skillId: number; description: string | null }>,
+    skills: UserSkillInputDto[],
   ): Promise<UserSkillInputDto[]> {
     await this.prisma.userSkill.deleteMany({ where: { userId } });
     if (skills.length > 0) {
