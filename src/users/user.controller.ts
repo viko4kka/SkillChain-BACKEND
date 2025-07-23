@@ -21,6 +21,7 @@ import { UpdateUserSkillsDto } from './dto/updateUserSkills.dto';
 import { AuthGuard } from '../auth/guards/auth.guard';
 import { UpdateUserProfileDto } from './dto/updateUserProfile.dto';
 import { LanguageDto } from 'src/common/dto/language.dto';
+import { MessageResponseDto } from 'src/utlis/dto/messageResponse.dto';
 
 @Controller('users')
 export class UserController {
@@ -69,7 +70,7 @@ export class UserController {
 
   @ApiOkResponse({
     description: 'Increments visits for a user by ID and type',
-    type: UserDto,
+    type: MessageResponseDto,
   })
   @Post('visits-inc/:userId/:type')
   @UseGuards(AuthGuard)
@@ -87,7 +88,7 @@ export class UserController {
 
   @ApiOkResponse({
     description: 'Sets skills for a user',
-    type: UserDto,
+    type: MessageResponseDto,
   })
   @Post('skills')
   @UseGuards(AuthGuard)
