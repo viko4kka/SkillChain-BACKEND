@@ -20,17 +20,21 @@ import { SessionData } from 'express-session';
 import { UpdateUserSkillsDto } from './dto/updateUserSkills.dto';
 import { AuthGuard } from '../auth/guards/auth.guard';
 import { UpdateUserProfileDto } from './dto/updateUserProfile.dto';
+import { LanguageDto } from 'src/common/dto/language.dto';
 
 @Controller('users')
 export class UserController {
   constructor(private readonly userService: UserService) {}
-  // LANGUAGES enpoints
+
+  @ApiOkResponse({
+    description: 'Returns all languages for a user',
+    type: [LanguageDto],
+  })
   @Get(':id/languages')
   async getUserLanguages(@Param('id', ParseIntPipe) userId: number) {
     return await this.userService.getUserLanguages(userId);
   }
 
-  // USERS endpoints
   @ApiOkResponse({
     description: 'Returns all users',
     type: [UserDto],
@@ -42,7 +46,7 @@ export class UserController {
 
   @ApiOkResponse({
     description: 'Returns one user by ID',
-    type: [UserDto],
+    type: UserDto
   })
   @Get(':id')
   async findOneUser(@Param('id', ParseIntPipe) id: number) {
@@ -52,7 +56,7 @@ export class UserController {
 
   @ApiOkResponse({
     description: 'Updates user profile by ID',
-    type: [UpdateUserProfileDto],
+    type: UpdateUserProfileDto,
   })
   @Patch(':id/profile')
   @UsePipes()
@@ -63,6 +67,10 @@ export class UserController {
     return this.userService.updateProfile(id, updateUserDto);
   }
 
+  @ApiOkResponse({
+    description: 'Increments visits for a user by ID and type',
+    type: UserDto,
+  })
   @Post('visits-inc/:userId/:type')
   @UseGuards(AuthGuard)
   async incrementVisits(
@@ -77,6 +85,10 @@ export class UserController {
     return { message: `${type} visits incremented` };
   }
 
+  @ApiOkResponse({
+    description: 'Sets skills for a user',
+    type: UserDto,
+  })
   @Post('skills')
   @UseGuards(AuthGuard)
   async setSkillsForUser(@Session() session: SessionData, @Body() body: UpdateUserSkillsDto) {

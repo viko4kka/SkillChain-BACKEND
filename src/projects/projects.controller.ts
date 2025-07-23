@@ -30,6 +30,10 @@ export class ProjectsController {
     return this.projectsService.findAllforUser(userId);
   }
 
+  @ApiOkResponse({
+    description: 'Creates a new project for the logged-in user',
+    type: ProjectDto,
+  })
   @Post()
   @UseGuards(AuthGuard)
   async createProject(@Session() session: SessionData, @Body() createProjectDto: InputProjectDto) {
@@ -37,6 +41,10 @@ export class ProjectsController {
     return this.projectsService.createProject(createProjectDto, userId!);
   }
 
+  @ApiOkResponse({
+    description: 'Updates a project for the logged-in user',
+    type: ProjectDto,
+  })
   @Patch(':id')
   @UseGuards(AuthGuard)
   async updateProject(
@@ -48,6 +56,10 @@ export class ProjectsController {
     return this.projectsService.updateProject(id, updateProjectDto, userId!);
   }
 
+  @ApiOkResponse({
+    description: 'Deletes a project for the logged-in user',
+    type: Object,
+  })
   @Delete(':id')
   @UseGuards(AuthGuard)
   async deleteProject(@Param('id', ParseIntPipe) id: number, @Session() session: SessionData) {

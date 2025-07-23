@@ -69,8 +69,6 @@ export class UserService {
     });
   }
 
-  // LANGUAGES methods
-  // Get languages assigned to a user
   async getUserLanguages(userId: number): Promise<LanguageDto[]> {
     const userLanguages = await this.prisma.userLanguage.findMany({
       where: { userId },
@@ -96,24 +94,6 @@ export class UserService {
         data: { githubVisits: { increment: 1 } },
       });
     }
-  }
-
-  async deleteAllSkillsForUser(userId: number): Promise<void> {
-    await this.prisma.userSkill.deleteMany({ where: { userId } });
-  }
-
-  async addSkillsForUser(
-    userId: number,
-    skills: Array<{ skillId: number; description?: string }>,
-  ): Promise<void> {
-    if (skills.length === 0) return;
-    await this.prisma.userSkill.createMany({
-      data: skills.map(skill => ({
-        userId,
-        skillId: skill.skillId,
-        description: skill.description ?? null,
-      })),
-    });
   }
 
   async setSkillsForUser(
