@@ -6,6 +6,7 @@ import { CreateUserInput } from './interfaces/createUserInput.interface';
 import { UpdateUserProfileDto } from './dto/updateUserProfile.dto';
 import { GetUsersQueryDto } from './dto/getUsers.dto';
 import { LanguageDto } from '../common/dto/language.dto';
+import { UserSkillInputDto } from './dto/updateUserSkills.dto';
 
 @Injectable()
 export class UserService {
@@ -99,7 +100,7 @@ export class UserService {
   async setSkillsForUser(
     userId: number,
     skills: Array<{ skillId: number; description: string | null }>,
-  ): Promise<Array<{ skillId: number; description: string | null }>> {
+  ): Promise<UserSkillInputDto[]> {
     await this.prisma.userSkill.deleteMany({ where: { userId } });
     if (skills.length > 0) {
       await this.prisma.userSkill.createMany({
@@ -110,9 +111,10 @@ export class UserService {
         })),
       });
     }
-    return this.prisma.userSkill.findMany({
+    const dbSkills = await this.prisma.userSkill.findMany({
       where: { userId },
       select: { skillId: true, description: true },
     });
+    return plainToInstance(UserSkillInputDto, dbSkills);
   }
 }
