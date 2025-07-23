@@ -1,5 +1,5 @@
 import { Injectable, BadRequestException } from '@nestjs/common';
-import { Project } from '@prisma/client'; // This is the Prisma interface/type
+import { Project } from '@prisma/client';
 import { PrismaService } from 'prisma/prisma.service';
 import { ProjectDto } from './dto/project.dto';
 import { plainToInstance } from 'class-transformer';
