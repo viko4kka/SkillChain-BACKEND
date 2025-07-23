@@ -1,12 +1,10 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Exclude } from 'class-transformer';
 
 export class ProjectDto {
   @ApiProperty({ description: 'Unique identifier for the project', type: Number })
   id: number;
 
   @ApiProperty({ description: 'User ID', type: Number })
-  @Exclude()
   idUser: number;
 
   @ApiProperty({ description: 'Name of the project', type: String })

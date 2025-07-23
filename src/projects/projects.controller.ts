@@ -1,6 +1,5 @@
 import {
   Body,
-  BadRequestException,
   Session,
   Controller,
   Get,
@@ -12,7 +11,7 @@ import {
   Delete,
 } from '@nestjs/common';
 import { ProjectsService } from './projects.service';
-import { inputProjectDto } from './dto/inputProject.dto';
+import { InputProjectDto } from './dto/inputProject.dto';
 import { ApiOkResponse } from '@nestjs/swagger';
 import { ProjectDto } from './dto/project.dto';
 import { AuthGuard } from '../auth/guards/auth.guard';
@@ -31,46 +30,41 @@ export class ProjectsController {
     return this.projectsService.findAllforUser(userId);
   }
 
+  @ApiOkResponse({
+    description: 'Creates a new project for the logged-in user',
+    type: ProjectDto,
+  })
   @Post()
   @UseGuards(AuthGuard)
-  async createProject(@Session() session: SessionData, @Body() createProjectDto: inputProjectDto) {
+  async createProject(@Session() session: SessionData, @Body() createProjectDto: InputProjectDto) {
     const userId = session.user?.id;
-    if (!userId) {
-      throw new BadRequestException('User not logged in');
-    }
-    return this.projectsService.createProject(createProjectDto, userId);
+    return this.projectsService.createProject(createProjectDto, userId!);
   }
 
+  @ApiOkResponse({
+    description: 'Updates a project for the logged-in user',
+    type: ProjectDto,
+  })
   @Patch(':id')
   @UseGuards(AuthGuard)
   async updateProject(
     @Param('id', ParseIntPipe) id: number,
-    @Body() updateProjectDto: inputProjectDto,
+    @Body() updateProjectDto: InputProjectDto,
     @Session() session: SessionData,
   ) {
     const userId = session.user?.id;
-    if (!userId) {
-      throw new BadRequestException('User not logged in');
-    }
-    const project = await this.projectsService.findOne(id);
-    if (!project || project.idUser !== userId) {
-      throw new BadRequestException('Project not found or access denied');
-    }
-    return this.projectsService.updateProject(id, updateProjectDto, userId);
+    return this.projectsService.updateProject(id, updateProjectDto, userId!);
   }
 
+  @ApiOkResponse({
+    description: 'Deletes a project for the logged-in user',
+    type: Object,
+  })
   @Delete(':id')
   @UseGuards(AuthGuard)
   async deleteProject(@Param('id', ParseIntPipe) id: number, @Session() session: SessionData) {
     const userId = session.user?.id;
-    if (!userId) {
-      throw new BadRequestException('User not logged in');
-    }
-    const project = await this.projectsService.findOne(id);
-    if (!project || project.idUser !== userId) {
-      throw new BadRequestException('Project not found or access denied');
-    }
-    await this.projectsService.deleteProject(id);
+    await this.projectsService.deleteProject(id, userId!);
     return { message: 'Project deleted' };
   }
 }
