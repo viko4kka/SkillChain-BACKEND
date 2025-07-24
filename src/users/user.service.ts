@@ -6,6 +6,7 @@ import { CreateUserInput } from './interfaces/createUserInput.interface';
 import { UpdateUserProfileDto } from './dto/updateUserProfile.dto';
 import { GetUsersQueryDto } from './dto/getUsers.dto';
 import { LanguageDto } from '../common/dto/language.dto';
+import { UserSkillInputDto } from './dto/updateUserSkills.dto';
 
 @Injectable()
 export class UserService {
@@ -69,8 +70,6 @@ export class UserService {
     });
   }
 
-  // LANGUAGES methods
-  // Get languages assigned to a user
   async getUserLanguages(userId: number): Promise<LanguageDto[]> {
     const userLanguages = await this.prisma.userLanguage.findMany({
       where: { userId },
@@ -96,5 +95,26 @@ export class UserService {
         data: { githubVisits: { increment: 1 } },
       });
     }
+  }
+
+  async setSkillsForUser(
+    userId: number,
+    skills: UserSkillInputDto[],
+  ): Promise<UserSkillInputDto[]> {
+    await this.prisma.userSkill.deleteMany({ where: { userId } });
+    if (skills.length > 0) {
+      await this.prisma.userSkill.createMany({
+        data: skills.map(skill => ({
+          userId,
+          skillId: skill.skillId,
+          description: skill.description ?? null,
+        })),
+      });
+    }
+    const dbSkills = await this.prisma.userSkill.findMany({
+      where: { userId },
+      select: { skillId: true, description: true },
+    });
+    return plainToInstance(UserSkillInputDto, dbSkills);
   }
 }
