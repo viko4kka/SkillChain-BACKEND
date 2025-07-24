@@ -1,12 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'prisma/prisma.service';
-import { UserDto } from './dto/users.dto';
+import { UserDto } from './dto/user.dto';
 import { plainToInstance } from 'class-transformer';
 import { CreateUserInput } from './interfaces/createUserInput.interface';
 import { UpdateUserProfileDto } from './dto/updateUserProfile.dto';
 import { GetUsersQueryDto } from './dto/getUsers.dto';
-import { LanguageDto } from 'src/languages/dto/language.dto';
-import { SkillDto } from 'src/users/dto/skill.dto';
+import { LanguageDto } from '../common/dto/language.dto';
+import { UserSkillInputDto } from './dto/updateUserSkills.dto';
 
 @Injectable()
 export class UserService {
@@ -24,11 +24,15 @@ export class UserService {
           description: string | null;
           gitUrl: string | null;
           linkedinUrl: string | null;
+          linkedinVisits: number;
+          githubVisits: number;
+          imgUrl: string | null;
         }>
       >(
-        `SELECT id, "firstName", "lastName", "email", "job", "description", "gitUrl", "linkedinUrl"
-      FROM "User" WHERE similarity("firstName", $1) > 0.2 OR similarity("lastName", $1) > 0.2
-      ORDER BY GREATEST(similarity("firstName", $1), similarity("lastName", $1)) DESC`,
+        `SELECT id, "firstName", "lastName", "email", "job", "description", "gitUrl", "linkedinUrl",
+        "linkedinVisits", "githubVisits", "imgUrl"
+        FROM "User" WHERE similarity("firstName", $1) > 0.2 OR similarity("lastName", $1) > 0.2
+        ORDER BY GREATEST(similarity("firstName", $1), similarity("lastName", $1)) DESC`,
         query.search,
       );
       return plainToInstance(UserDto, users);
@@ -66,16 +70,6 @@ export class UserService {
     });
   }
 
-  // Assign a language to a user
-  async assignLanguageToUser(userId: number, languageId: number): Promise<void> {
-    await this.prisma.userLanguage.create({
-      data: {
-        userId,
-        languageId,
-      },
-    });
-  }
-  // Get languages assigned to a user
   async getUserLanguages(userId: number): Promise<LanguageDto[]> {
     const userLanguages = await this.prisma.userLanguage.findMany({
       where: { userId },
@@ -89,9 +83,38 @@ export class UserService {
       }));
   }
 
-  // Returns all skills
-  async getAllSkills(): Promise<SkillDto[]> {
-    const skills = await this.prisma.skill.findMany();
-    return plainToInstance(SkillDto, skills);
+  async incrementVisits(userId: number, type: 'linkedin' | 'github'): Promise<void> {
+    if (type === 'linkedin') {
+      await this.prisma.user.update({
+        where: { id: userId },
+        data: { linkedinVisits: { increment: 1 } },
+      });
+    } else if (type === 'github') {
+      await this.prisma.user.update({
+        where: { id: userId },
+        data: { githubVisits: { increment: 1 } },
+      });
+    }
+  }
+
+  async setSkillsForUser(
+    userId: number,
+    skills: UserSkillInputDto[],
+  ): Promise<UserSkillInputDto[]> {
+    await this.prisma.userSkill.deleteMany({ where: { userId } });
+    if (skills.length > 0) {
+      await this.prisma.userSkill.createMany({
+        data: skills.map(skill => ({
+          userId,
+          skillId: skill.skillId,
+          description: skill.description ?? null,
+        })),
+      });
+    }
+    const dbSkills = await this.prisma.userSkill.findMany({
+      where: { userId },
+      select: { skillId: true, description: true },
+    });
+    return plainToInstance(UserSkillInputDto, dbSkills);
   }
 }

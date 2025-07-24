@@ -5,28 +5,35 @@ import {
   Param,
   Body,
   UsePipes,
+  Session,
+  UseGuards,
   ParseIntPipe,
   Post,
   Query,
+  BadRequestException,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { GetUsersQueryDto } from './dto/getUsers.dto';
-import { UserDto } from './dto/users.dto';
+import { UserDto } from './dto/user.dto';
 import { ApiOkResponse } from '@nestjs/swagger';
+import { SessionData } from 'express-session';
+import { UpdateUserSkillsDto, UserSkillInputDto } from './dto/updateUserSkills.dto';
+import { AuthGuard } from '../auth/guards/auth.guard';
 import { UpdateUserProfileDto } from './dto/updateUserProfile.dto';
-import { SkillDto } from 'src/users/dto/skill.dto';
+import { LanguageDto } from 'src/common/dto/language.dto';
+import { MessageResponseDto } from 'src/utlis/dto/messageResponse.dto';
 
 @Controller('users')
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
   @ApiOkResponse({
-    description: 'Returns all skills',
-    type: [SkillDto],
+    description: 'Returns all languages for a user',
+    type: [LanguageDto],
   })
-  @Get('/skills')
-  async getAllSkills() {
-    return await this.userService.getAllSkills();
+  @Get(':id/languages')
+  async getUserLanguages(@Param('id', ParseIntPipe) userId: number) {
+    return await this.userService.getUserLanguages(userId);
   }
 
   @ApiOkResponse({
@@ -40,7 +47,7 @@ export class UserController {
 
   @ApiOkResponse({
     description: 'Returns one user by ID',
-    type: [UserDto],
+    type: UserDto,
   })
   @Get(':id')
   async findOneUser(@Param('id', ParseIntPipe) id: number) {
@@ -50,7 +57,7 @@ export class UserController {
 
   @ApiOkResponse({
     description: 'Updates user profile by ID',
-    type: [UpdateUserProfileDto],
+    type: UpdateUserProfileDto,
   })
   @Patch(':id/profile')
   @UsePipes()
@@ -61,17 +68,32 @@ export class UserController {
     return this.userService.updateProfile(id, updateUserDto);
   }
 
-  @Post(':id/language/:languageId')
-  async assignLanguageToUser(
-    @Param('id', ParseIntPipe) userId: number,
-    @Param('languageId', ParseIntPipe) languageId: number,
+  @ApiOkResponse({
+    description: 'Increments visits for a user by ID and type',
+    type: MessageResponseDto,
+  })
+  @Post('visits-inc/:userId/:type')
+  @UseGuards(AuthGuard)
+  async incrementVisits(
+    @Session() session: SessionData,
+    @Param('userId', ParseIntPipe) userId: number,
+    @Param('type') type: 'linkedin' | 'github',
   ) {
-    await this.userService.assignLanguageToUser(userId, languageId);
-    return { message: 'Language assigned to user successfully' };
+    if (session.user?.id === userId) {
+      throw new BadRequestException('You cannot increment your own visits');
+    }
+    await this.userService.incrementVisits(userId, type);
+    return { message: `${type} visits incremented` };
   }
 
-  @Get(':id/languages')
-  async getUserLanguages(@Param('id', ParseIntPipe) userId: number) {
-    return await this.userService.getUserLanguages(userId);
+  @ApiOkResponse({
+    description: 'Sets skills for a user',
+    type: [UserSkillInputDto],
+  })
+  @Post('skills')
+  @UseGuards(AuthGuard)
+  async setSkillsForUser(@Session() session: SessionData, @Body() body: UpdateUserSkillsDto) {
+    const userId = session.user?.id;
+    return this.userService.setSkillsForUser(userId!, body.skills);
   }
 }

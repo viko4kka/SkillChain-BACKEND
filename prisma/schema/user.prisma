@@ -9,7 +9,11 @@ model User {
     job           String?
     gitUrl        String?
     linkedinUrl   String?
-    userSkills   UserSkill[]
+    userSkills    UserSkill[]
     userLanguages UserLanguage[]
+    locationId    Int?
+    location      Location?      @relation(fields: [locationId], references: [id])
     projects      Project[]
+    linkedinVisits Int @default(0)
+    githubVisits   Int @default(0)
 }
