@@ -48,7 +48,10 @@ export class AuthController {
     @Query('code') code: string,
     @Query('state') state: string,
     @Session() session: SessionData,
+    @Res() res: Response,
   ) {
+    const frontendUrl = this.configService.get<string>('FRONTEND_URL') || 'http://localhost:3000/';
+
     if (state !== session.linkedinState) {
       throw new BadRequestException('Invalid state parameter');
     }
@@ -67,7 +70,7 @@ export class AuthController {
 
       session.user = user;
 
-      return { user };
+      return res.redirect(frontendUrl + '/profile/' + user.id);
     } catch (error) {
       console.error('LinkedIn callback error:', error);
       throw new InternalServerErrorException('LinkedIn login error');
