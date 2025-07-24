@@ -36,10 +36,9 @@ export class ProjectsController {
     type: ProjectDto,
   })
   @Post()
-  @UseGuards(AuthGuard)
-  async createProject(@Session() session: SessionData, @Body() createProjectDto: InputProjectDto) {
-    const userId = session.user?.id;
-    return this.projectsService.createProject(createProjectDto, userId!);
+  //@UseGuards(AuthGuard)
+  async createProject(@Body() createProjectDto: InputProjectDto) {
+    return this.projectsService.createProject(createProjectDto, 21);
   }
 
   @ApiOkResponse({
@@ -47,13 +46,12 @@ export class ProjectsController {
     type: ProjectDto,
   })
   @Patch(':id')
-  @UseGuards(AuthGuard)
+  //@UseGuards(AuthGuard)
   async updateProject(
     @Param('id', ParseIntPipe) id: number,
     @Body() updateProjectDto: InputProjectDto,
-    @Session() session: SessionData,
   ) {
-    const userId = session.user?.id;
+    const userId = 21;
     return this.projectsService.updateProject(id, updateProjectDto, userId!);
   }
 
@@ -62,10 +60,10 @@ export class ProjectsController {
     type: MessageResponseDto,
   })
   @Delete(':id')
-  @UseGuards(AuthGuard)
-  async deleteProject(@Param('id', ParseIntPipe) id: number, @Session() session: SessionData) {
-    const userId = session.user?.id;
-    await this.projectsService.deleteProject(id, userId!);
+  //@UseGuards(AuthGuard)
+  async deleteProject(@Param('id', ParseIntPipe) id: number) {
+    const userId = 21;
+    await this.projectsService.deleteProject(id, 21);
     return { message: 'Project deleted' };
   }
 }

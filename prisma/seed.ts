@@ -5,6 +5,7 @@ import { languages } from './seedingData/languages';
 import { locations } from './seedingData/locations';
 import { userLanguages } from './seedingData/userLanguage';
 import { userSkills } from './seedingData/userSkill';
+import { projects } from './seedingData/projects';
 
 const prisma = new PrismaClient();
 
@@ -43,6 +44,12 @@ async function main() {
   await prisma.userSkill.deleteMany();
   await prisma.userSkill.createMany({
     data: userSkills,
+  });
+
+  // PROJECTS table
+  await prisma.project.deleteMany();
+  await prisma.project.createMany({
+    data: projects,
   });
 }
 
