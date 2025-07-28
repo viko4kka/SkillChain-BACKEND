@@ -100,7 +100,7 @@ export class UserController {
 
   @ApiOkResponse({
     description: 'Assigns a wallet address to a user',
-    type: MessageResponseDto
+    type: MessageResponseDto,
   })
   @Patch('wallet')
   @UseGuards(AuthGuard)
