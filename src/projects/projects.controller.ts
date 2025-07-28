@@ -27,7 +27,7 @@ export class ProjectsController {
 
   @ApiOkResponse({
     description: 'Returns all projects for a user',
-    type: [PaginatedLanguagesDto],
+    type: PaginatedLanguagesDto,
   })
   @Get('user/:userId')
   async findAllforUser(
