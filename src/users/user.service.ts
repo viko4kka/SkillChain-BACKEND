@@ -109,12 +109,7 @@ export class UserService {
       where: { userId },
       include: { language: true },
     });
-    return userLanguages
-      .filter(ul => ul.language)
-      .map(ul => ({
-        id: ul.language.id,
-        name: ul.language.name,
-      }));
+    return plainToInstance(LanguageDto, userLanguages);
   }
 
   async setSkillsForUser(
