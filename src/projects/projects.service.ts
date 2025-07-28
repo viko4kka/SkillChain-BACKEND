@@ -4,16 +4,34 @@ import { PrismaService } from 'prisma/prisma.service';
 import { ProjectDto } from './dto/project.dto';
 import { plainToInstance } from 'class-transformer';
 import { InputProjectDto } from './dto/inputProject.dto';
+import { PaginationQueryFilter } from 'src/utlis/dto/pagination.dto';
+import { PaginationService } from 'src/utlis/pagination.service';
 
 @Injectable()
 export class ProjectsService {
   constructor(private prisma: PrismaService) {}
 
-  async findAllforUser(userId: number): Promise<ProjectDto[]> {
-    const projects = await this.prisma.project.findMany({
-      where: { idUser: userId },
+  async findUsersProjects(paginationDto: PaginationQueryFilter, userId: number) {
+    const where = { idUser: userId };
+
+    const totalCount = await this.prisma.project.count({
+      where,
     });
-    return plainToInstance(ProjectDto, projects);
+
+    const paginationService = new PaginationService({
+      itemsCount: totalCount,
+      page: paginationDto.page,
+      perPage: paginationDto.perPage,
+    });
+
+    const projects = await this.prisma.project.findMany({
+      where,
+      ...paginationService.getPaginationParams(),
+    });
+    return {
+      data: plainToInstance(ProjectDto, projects),
+      ...paginationService.getPaginationResult(),
+    };
   }
 
   async createProject(createProjectDto: InputProjectDto, userId: number): Promise<Project> {
