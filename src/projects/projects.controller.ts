@@ -9,6 +9,7 @@ import {
   UseGuards,
   Patch,
   Delete,
+  Query,
 } from '@nestjs/common';
 import { ProjectsService } from './projects.service';
 import { InputProjectDto } from './dto/inputProject.dto';
@@ -16,6 +17,9 @@ import { ApiOkResponse } from '@nestjs/swagger';
 import { ProjectDto } from './dto/project.dto';
 import { AuthGuard } from '../auth/guards/auth.guard';
 import { SessionData } from 'express-session';
+import { MessageResponseDto } from 'src/utlis/dto/messageResponse.dto';
+import { PaginationQueryFilter } from 'src/utlis/dto/pagination.dto';
+import { PaginatedLanguagesDto } from 'src/common/dto/paginatedLanguages.dto';
 
 @Controller('projects')
 export class ProjectsController {
@@ -23,11 +27,14 @@ export class ProjectsController {
 
   @ApiOkResponse({
     description: 'Returns all projects for a user',
-    type: [ProjectDto],
+    type: PaginatedLanguagesDto,
   })
   @Get('user/:userId')
-  async findAllforUser(@Param('userId', ParseIntPipe) userId: number) {
-    return this.projectsService.findAllforUser(userId);
+  async findUsersProjects(
+    @Query() paginationQuery: PaginationQueryFilter,
+    @Param('userId', ParseIntPipe) userId: number,
+  ) {
+    return this.projectsService.findUsersProjects(paginationQuery, userId);
   }
 
   @ApiOkResponse({
@@ -58,7 +65,7 @@ export class ProjectsController {
 
   @ApiOkResponse({
     description: 'Deletes a project for the logged-in user',
-    type: Object,
+    type: MessageResponseDto,
   })
   @Delete(':id')
   @UseGuards(AuthGuard)

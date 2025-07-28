@@ -16,7 +16,6 @@ async function bootstrap() {
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
     credentials: true,
   });
-
   app.use(
     session({
       secret: configService.get<string>('LINKEDIN_CLIENT_SECRET') || 'default_secret',
@@ -24,6 +23,9 @@ async function bootstrap() {
       saveUninitialized: false,
       cookie: {
         maxAge: 3600000,
+        httpOnly: true,
+        sameSite: 'lax',
+        secure: false,
       },
     }),
   );
