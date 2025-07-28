@@ -42,8 +42,7 @@ export class UserController {
   @UseGuards(AuthGuard)
   async updateUserLanguages(@Body() languageIds: number[], @Session() session: SessionData) {
     const userId = session.user?.id;
-    await this.userService.updateUserLanguages(userId!, languageIds);
-    return { message: 'Languages updated successfully' };
+    return this.userService.updateUserLanguages(userId!, languageIds);
   }
 
   @ApiOkResponse({
