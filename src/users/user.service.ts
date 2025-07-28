@@ -117,4 +117,11 @@ export class UserService {
     });
     return plainToInstance(UserSkillInputDto, dbSkills);
   }
+
+  async setWalletAddress(userId: number, address: string) {
+    return this.prisma.user.update({
+      where: { id: userId },
+      data: { address },
+    });
+  }
 }
