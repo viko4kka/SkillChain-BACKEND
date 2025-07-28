@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsInt, IsOptional, IsString, IsUrl } from 'class-validator';
+import { IsOptional, IsString, IsUrl } from 'class-validator';
 
-export class CreateProjectDto {
+export class InputProjectDto {
   @ApiProperty({ description: 'Name of the project' })
   @IsString()
   projectName: string;
@@ -18,12 +18,11 @@ export class CreateProjectDto {
   @IsOptional()
   githubLink: string | null;
 
-  @ApiProperty({ description: 'Link to the project website', required: false })
+  @ApiProperty({
+    description: 'Link to the project website',
+    required: false,
+  })
   @IsUrl()
   @IsOptional()
   websiteLink: string | null;
-
-  @ApiProperty({ description: 'ID of the user creating the project' })
-  @IsInt()
-  idUser: number;
 }
