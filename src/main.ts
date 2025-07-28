@@ -10,6 +10,11 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   const configService = app.get(ConfigService);
 
+  app.enableCors({
+    origin: 'http://localhost:3000',
+    credentials: true,
+  });
+
   app.use(
     session({
       secret: configService.get<string>('LINKEDIN_CLIENT_SECRET') || 'default_secret',
@@ -17,6 +22,9 @@ async function bootstrap() {
       saveUninitialized: false,
       cookie: {
         maxAge: 3600000,
+        httpOnly: true,
+        sameSite: 'lax',
+        secure: false,
       },
     }),
   );
