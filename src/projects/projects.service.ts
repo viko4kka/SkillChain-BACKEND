@@ -12,8 +12,10 @@ export class ProjectsService {
   constructor(private prisma: PrismaService) {}
 
   async findAllforUser(paginationDto: PaginationQueryFilter, userId: number) {
+    const where = { idUser: userId };
+
     const totalCount = await this.prisma.project.count({
-      where: { idUser: userId },
+      where,
     });
 
     const paginationService = new PaginationService({
@@ -23,7 +25,7 @@ export class ProjectsService {
     });
 
     const projects = await this.prisma.project.findMany({
-      where: { idUser: userId },
+      where,
       ...paginationService.getPaginationParams(),
     });
     return {

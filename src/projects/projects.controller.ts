@@ -19,6 +19,7 @@ import { AuthGuard } from '../auth/guards/auth.guard';
 import { SessionData } from 'express-session';
 import { MessageResponseDto } from 'src/utlis/dto/messageResponse.dto';
 import { PaginationQueryFilter } from 'src/utlis/dto/pagination.dto';
+import { PaginatedLanguagesDto } from 'src/common/dto/paginatedLanguages.dto';
 
 @Controller('projects')
 export class ProjectsController {
@@ -26,7 +27,7 @@ export class ProjectsController {
 
   @ApiOkResponse({
     description: 'Returns all projects for a user',
-    type: [ProjectDto],
+    type: [PaginatedLanguagesDto],
   })
   @Get('user/:userId')
   async findAllforUser(
