@@ -7,6 +7,7 @@ import { UpdateUserProfileDto } from './dto/updateUserProfile.dto';
 import { GetUsersQueryDto } from './dto/getUsers.dto';
 import { LanguageDto } from '../common/dto/language.dto';
 import { UserSkillInputDto } from './dto/updateUserSkills.dto';
+import { PaginatedLanguagesDto } from 'src/common/dto/paginatedLanguages.dto';
 
 @Injectable()
 export class UserService {
@@ -109,7 +110,7 @@ export class UserService {
       where: { userId },
       include: { language: true },
     });
-    return plainToInstance(LanguageDto, userLanguages);
+    return plainToInstance(PaginatedLanguagesDto, userLanguages);
   }
 
   async setSkillsForUser(

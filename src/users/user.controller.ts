@@ -22,6 +22,7 @@ import { AuthGuard } from '../auth/guards/auth.guard';
 import { UpdateUserProfileDto } from './dto/updateUserProfile.dto';
 import { LanguageDto } from 'src/common/dto/language.dto';
 import { MessageResponseDto } from 'src/utlis/dto/messageResponse.dto';
+import { PaginatedLanguagesDto } from 'src/common/dto/paginatedLanguages.dto';
 
 @Controller('users')
 export class UserController {
@@ -44,7 +45,7 @@ export class UserController {
   async updateUserLanguages(
     @Body() languageIds: number[],
     @Session() session: SessionData,
-  ): Promise<LanguageDto[]> {
+  ): Promise<PaginatedLanguagesDto[]> {
     const userId = session.user?.id;
     return this.userService.updateUserLanguages(userId!, languageIds);
   }
