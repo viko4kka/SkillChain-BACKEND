@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { ForbiddenException, Injectable } from '@nestjs/common';
 import { PrismaService } from 'prisma/prisma.service';
 import { UserDto } from './dto/user.dto';
 import { plainToInstance } from 'class-transformer';
@@ -119,6 +119,10 @@ export class UserService {
   }
 
   async setWalletAddress(userId: number, address: string) {
+    const user = await this.prisma.user.findUnique({ where: { id: userId } });
+    if (user!.address) {
+      throw new ForbiddenException('Wallet address already set and cannot be changed');
+    }
     return this.prisma.user.update({
       where: { id: userId },
       data: { address },
