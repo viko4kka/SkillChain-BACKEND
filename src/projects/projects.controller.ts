@@ -30,11 +30,11 @@ export class ProjectsController {
     type: PaginatedLanguagesDto,
   })
   @Get('user/:userId')
-  async findAllforUser(
+  async findUsersProjects(
     @Query() paginationQuery: PaginationQueryFilter,
     @Param('userId', ParseIntPipe) userId: number,
   ) {
-    return this.projectsService.findAllforUser(paginationQuery, userId);
+    return this.projectsService.findUsersProjects(paginationQuery, userId);
   }
 
   @ApiOkResponse({

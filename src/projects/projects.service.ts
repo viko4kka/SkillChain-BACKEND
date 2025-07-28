@@ -11,7 +11,7 @@ import { PaginationService } from 'src/utlis/pagination.service';
 export class ProjectsService {
   constructor(private prisma: PrismaService) {}
 
-  async findAllforUser(paginationDto: PaginationQueryFilter, userId: number) {
+  async findUsersProjects(paginationDto: PaginationQueryFilter, userId: number) {
     const where = { idUser: userId };
 
     const totalCount = await this.prisma.project.count({
