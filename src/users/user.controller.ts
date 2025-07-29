@@ -22,7 +22,6 @@ import { AuthGuard } from '../auth/guards/auth.guard';
 import { UpdateUserProfileDto } from './dto/updateUserProfile.dto';
 import { LanguageDto } from 'src/common/dto/language.dto';
 import { MessageResponseDto } from 'src/utlis/dto/messageResponse.dto';
-import { PaginatedLanguagesDto } from 'src/common/dto/paginatedLanguages.dto';
 
 @Controller('users')
 export class UserController {
