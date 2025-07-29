@@ -37,6 +37,20 @@ export class UserController {
   }
 
   @ApiOkResponse({
+    description: 'Updates user languages',
+    type: [LanguageDto],
+  })
+  @Post('languages')
+  @UseGuards(AuthGuard)
+  async updateUserLanguages(
+    @Body() languageIds: number[],
+    @Session() session: SessionData,
+  ): Promise<LanguageDto[]> {
+    const userId = session.user?.id;
+    return this.userService.updateUserLanguages(userId!, languageIds);
+  }
+
+  @ApiOkResponse({
     description: 'Returns all users',
     type: [UserDto],
   })
