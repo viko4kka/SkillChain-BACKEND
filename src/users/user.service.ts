@@ -110,7 +110,13 @@ export class UserService {
       where: { userId },
       include: { language: true },
     });
-    return plainToInstance(PaginatedLanguagesDto, userLanguages);
+    return plainToInstance(
+      PaginatedLanguagesDto,
+      userLanguages.map(ul => ({
+        id: ul.language.id,
+        name: ul.language.name,
+      })),
+    );
   }
 
   async setSkillsForUser(
