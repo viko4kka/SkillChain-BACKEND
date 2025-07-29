@@ -96,4 +96,9 @@ export class UserController {
     const userId = session.user?.id;
     return this.userService.setSkillsForUser(userId!, body.skills);
   }
+
+  @Get(':id/skills')
+  async getUserSkills(@Param('id') id: string) {
+    return this.userService.getSkillsForUser(Number(id));
+  }
 }

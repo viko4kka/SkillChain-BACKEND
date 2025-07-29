@@ -117,4 +117,11 @@ export class UserService {
     });
     return plainToInstance(UserSkillInputDto, dbSkills);
   }
+
+  async getSkillsForUser(userId: number) {
+    return this.prisma.userSkill.findMany({
+      where: { userId },
+      include: { skill: true }, // if you want skill details
+    });
+  }
 }
