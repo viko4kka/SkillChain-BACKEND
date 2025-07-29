@@ -111,7 +111,7 @@ export class UserService {
       include: { language: true },
     });
     return plainToInstance(
-      PaginatedLanguagesDto,
+      LanguageDto,
       userLanguages.map(ul => ({
         id: ul.language.id,
         name: ul.language.name,

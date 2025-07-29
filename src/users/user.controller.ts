@@ -36,6 +36,7 @@ export class UserController {
   async getUserLanguages(@Param('id', ParseIntPipe) userId: number) {
     return await this.userService.getUserLanguages(userId);
   }
+
   @ApiOkResponse({
     description: 'Updates user languages',
     type: [LanguageDto],
@@ -45,7 +46,7 @@ export class UserController {
   async updateUserLanguages(
     @Body() languageIds: number[],
     @Session() session: SessionData,
-  ): Promise<PaginatedLanguagesDto[]> {
+  ): Promise<LanguageDto[]> {
     const userId = session.user?.id;
     return this.userService.updateUserLanguages(userId!, languageIds);
   }
