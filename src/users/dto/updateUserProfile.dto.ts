@@ -21,4 +21,6 @@ export class UpdateUserProfileDto {
   @IsOptional()
   @IsUrl()
   linkedinUrl: string | null;
+
+  
 }
