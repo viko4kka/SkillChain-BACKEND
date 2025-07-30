@@ -97,6 +97,27 @@ export class UserService {
     }
   }
 
+  // Post new language for a user
+  async updateUserLanguages(userId: number, languageIds: number[]) {
+    await this.prisma.userLanguage.deleteMany({ where: { userId } });
+    if (languageIds.length > 0) {
+      await this.prisma.userLanguage.createMany({
+        data: languageIds.map(languageId => ({ userId, languageId })),
+      });
+    }
+    const userLanguages = await this.prisma.userLanguage.findMany({
+      where: { userId },
+      include: { language: true },
+    });
+    return plainToInstance(
+      LanguageDto,
+      userLanguages.map(ul => ({
+        id: ul.language.id,
+        name: ul.language.name,
+      })),
+    );
+  }
+
   async setSkillsForUser(
     userId: number,
     skills: UserSkillInputDto[],
