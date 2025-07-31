@@ -18,10 +18,12 @@ import { AuthGuard } from './guards/auth.guard';
 import { ConfigService } from '@nestjs/config';
 import { AuthService } from './auth.service';
 import { LinkedinService } from './linkedin.service';
+import { UserService } from 'src/users/user.service';
 
 @Controller('auth')
 export class AuthController {
   constructor(
+    private readonly userService: UserService,
     private readonly linkedinService: LinkedinService,
     private readonly configService: ConfigService,
     private readonly authService: AuthService,
@@ -82,7 +84,7 @@ export class AuthController {
   @Get('me')
   @UseGuards(AuthGuard)
   getMe(@Session() session: SessionData) {
-    return session.user;
+    return this.userService.findOneUser(session.user!.id);
   }
 
   @Post('logout')

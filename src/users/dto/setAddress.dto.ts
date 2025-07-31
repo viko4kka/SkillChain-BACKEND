@@ -6,7 +6,7 @@ export class SetAddressDto {
   @IsEthereumAddress()
   walletAddress: string;
 
-  @ApiProperty({ description: 'Signature for user authentication', required: true })
+  @ApiProperty({ description: 'Signature for user authentication' })
   @IsString()
   signature: string;
 }
