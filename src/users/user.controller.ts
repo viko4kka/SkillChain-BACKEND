@@ -19,13 +19,14 @@ import { ApiOkResponse } from '@nestjs/swagger';
 import { SessionData } from 'express-session';
 import { UpdateUserSkillsDto, UserSkillInputDto } from './dto/updateUserSkills.dto';
 import { AuthGuard } from '../auth/guards/auth.guard';
+import { SetAddressDto } from './dto/setAddress.dto';
 import { UpdateUserProfileDto } from './dto/updateUserProfile.dto';
 import { LanguageDto } from 'src/common/dto/language.dto';
 import { MessageResponseDto } from 'src/utlis/dto/messageResponse.dto';
 import { UserSkillDto } from './dto/userSkill.dto';
 @Controller('users')
 export class UserController {
-  constructor(private readonly userService: UserService) {}
+  constructor(private readonly userService: UserService) { }
 
   @ApiOkResponse({
     description: 'Returns all languages for a user',
@@ -34,6 +35,20 @@ export class UserController {
   @Get(':id/languages')
   async getUserLanguages(@Param('id', ParseIntPipe) userId: number) {
     return await this.userService.getUserLanguages(userId);
+  }
+
+  @ApiOkResponse({
+    description: 'Updates user languages',
+    type: [LanguageDto],
+  })
+  @Post('languages')
+  @UseGuards(AuthGuard)
+  async updateUserLanguages(
+    @Body() languageIds: number[],
+    @Session() session: SessionData,
+  ): Promise<LanguageDto[]> {
+    const userId = session.user?.id;
+    return this.userService.updateUserLanguages(userId!, languageIds);
   }
 
   @ApiOkResponse({
@@ -106,5 +121,20 @@ export class UserController {
   @Get(':id/skills')
   async getUserSkills(@Param('id') id: string) {
     return this.userService.getSkillsForUser(Number(id));
+  }
+
+  @ApiOkResponse({
+    description: 'Assigns a wallet address to a user',
+    type: MessageResponseDto,
+  })
+  @Patch('wallet')
+  @UseGuards(AuthGuard)
+  async setWalletAddress(
+    @Session() session: SessionData,
+    @Body() setAddressDto: SetAddressDto,
+  ): Promise<MessageResponseDto> {
+    const userId = session.user?.id;
+    await this.userService.setWalletAddress(userId!, setAddressDto);
+    return { message: 'Wallet address updated successfully' };
   }
 }
