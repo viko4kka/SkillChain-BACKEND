@@ -46,6 +46,15 @@ export class UserController {
   }
 
   @ApiOkResponse({
+    description: 'Returns all UserSkill records from database',
+    type: [UserSkillDto],
+  })
+  @Get('all-skills') // Move this BEFORE any :id routes
+  async getAllUserSkills() {
+    return this.userService.getAllUserSkills();
+  }
+
+  @ApiOkResponse({
     description: 'Returns one user by ID',
     type: UserDto,
   })
@@ -100,14 +109,5 @@ export class UserController {
   @Get(':id/skills')
   async getUserSkills(@Param('id') id: string) {
     return this.userService.getSkillsForUser(Number(id));
-  }
-
-  @ApiOkResponse({
-    description: 'Returns all UserSkill records from database',
-    type: [UserSkillDto],
-  })
-  @Get('skills/all')
-  async getAllUserSkills() {
-    return this.userService.getAllUserSkills();
   }
 }

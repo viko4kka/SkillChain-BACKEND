@@ -1,5 +1,5 @@
-import { ApiProperty } from "@nestjs/swagger";
-import { UserDto } from "./user.dto";
+import { ApiProperty } from '@nestjs/swagger';
+import { UserDto } from './user.dto';
 
 export class DisplayUserDto extends UserDto {
   @ApiProperty({
@@ -7,12 +7,12 @@ export class DisplayUserDto extends UserDto {
     type: String,
     required: false,
   })
-    skills: string | null;
-    
-    @ApiProperty({
+  skills: string | null;
+
+  @ApiProperty({
     description: 'Location Name of the user',
     type: String,
     required: false,
   })
-    location: string | null;
+  locationName: string | null;
 }

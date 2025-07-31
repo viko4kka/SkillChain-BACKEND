@@ -34,5 +34,4 @@ export class UserDto {
 
   @ApiProperty({ description: 'Github visits counter', type: Number, required: false })
   githubVisits: number;
-
 }

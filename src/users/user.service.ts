@@ -26,7 +26,7 @@ export class UserService {
         query.search,
       );
 
-      return userSkills.join(', ');
+      return userSkills.length > 0 ? userSkills[0].skill : '';
     } else {
       return '';
     }
