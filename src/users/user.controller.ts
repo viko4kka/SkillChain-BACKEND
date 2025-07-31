@@ -26,7 +26,7 @@ import { MessageResponseDto } from 'src/utlis/dto/messageResponse.dto';
 import { UserSkillDto } from './dto/userSkill.dto';
 @Controller('users')
 export class UserController {
-  constructor(private readonly userService: UserService) {}
+  constructor(private readonly userService: UserService) { }
 
   @ApiOkResponse({
     description: 'Returns all languages for a user',
@@ -116,6 +116,14 @@ export class UserController {
     return this.userService.setSkillsForUser(userId!, body.skills);
   }
 
+<<<<<<< HEAD
+=======
+  @Get(':id/skills')
+  async getUserSkills(@Param('id') id: string) {
+    return this.userService.getSkillsForUser(Number(id));
+  }
+
+>>>>>>> origin/working/test_branch
   @ApiOkResponse({
     description: 'Assigns a wallet address to a user',
     type: MessageResponseDto,
@@ -129,10 +137,13 @@ export class UserController {
     const userId = session.user?.id;
     await this.userService.setWalletAddress(userId!, setAddressDto);
     return { message: 'Wallet address updated successfully' };
+<<<<<<< HEAD
   }
 
   @Get(':id/skills')
   async getUserSkills(@Param('id') id: string) {
     return this.userService.getSkillsForUser(Number(id));
+=======
+>>>>>>> origin/working/test_branch
   }
 }

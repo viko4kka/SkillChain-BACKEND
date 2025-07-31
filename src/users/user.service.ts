@@ -153,4 +153,36 @@ export class UserService {
       include: { skill: true }, // if you want skill details
     });
   }
+<<<<<<< HEAD
+=======
+
+
+  
+  async setWalletAddress(userId: number, setAddressDto: SetAddressDto) {
+    const user = await this.prisma.user.findUnique({ where: { id: userId } });
+    if (user!.walletAddress)
+      throw new ForbiddenException('Wallet address already set and cannot be changed');
+    const message = JSON.stringify({ id: userId });
+    const isValid = this.verifyWalletSignature(
+      setAddressDto.walletAddress,
+      setAddressDto.signature,
+      message,
+    );
+    if (!isValid) throw new ForbiddenException('Invalid wallet signature');
+
+    return this.prisma.user.update({
+      where: { id: userId },
+      data: { walletAddress: setAddressDto.walletAddress },
+    });
+  }
+
+  verifyWalletSignature(walletAddress: string, signature: string, message: string): boolean {
+    try {
+      const signer = ethers.verifyMessage(message, signature);
+      return signer.toLowerCase() === walletAddress.toLowerCase();
+    } catch {
+      return false;
+    }
+  }
+>>>>>>> origin/working/test_branch
 }
