@@ -13,24 +13,7 @@ import { DisplayUserDto } from './dto/displayUser.dto';
 export class UserService {
   constructor(private readonly prisma: PrismaService) {}
 
-  async getUserSkills(query: GetUsersQueryDto): Promise<string> {
-    if (query.search) {
-      const userSkills = await this.prisma.$queryRawUnsafe<
-        Array<{
-          skill: string;
-        }>
-      >(
-        `SELECT string_agg(s.name, ',' ORDER BY s.name) as skills
-        FROM public."Skill" s join public."UserSkill" us on s.id =us."skillId" join public."User" u on us."userId" = u.id
-        where u.id = 1`,
-        query.search,
-      );
 
-      return userSkills.length > 0 ? userSkills[0].skill : '';
-    } else {
-      return '';
-    }
-  }
 
   async getUsers(query: GetUsersQueryDto): Promise<DisplayUserDto[]> {
     const users = await this.prisma.$queryRawUnsafe<
@@ -150,13 +133,6 @@ export class UserService {
     });
   }
 
-  async getAllUserSkills() {
-    return this.prisma.userSkill.findMany({
-      select: {
-        skillId: true,
-        description: true,
-        userId: true,
-      },
-    });
-  }
+
+  
 }

@@ -49,10 +49,7 @@ export class UserController {
     description: 'Returns all UserSkill records from database',
     type: [UserSkillDto],
   })
-  @Get('all-skills') // Move this BEFORE any :id routes
-  async getAllUserSkills() {
-    return this.userService.getAllUserSkills();
-  }
+ 
 
   @ApiOkResponse({
     description: 'Returns one user by ID',
