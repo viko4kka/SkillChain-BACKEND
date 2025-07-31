@@ -15,8 +15,6 @@ import { DisplayUserDto } from './dto/displayUser.dto';
 export class UserService {
   constructor(private readonly prisma: PrismaService) {}
 
-
-
   async getUsers(query: GetUsersQueryDto): Promise<DisplayUserDto[]> {
     const users = await this.prisma.$queryRawUnsafe<
       Array<{
@@ -156,8 +154,6 @@ export class UserService {
     });
   }
 
-
-  
   async setWalletAddress(userId: number, setAddressDto: SetAddressDto) {
     const user = await this.prisma.user.findUnique({ where: { id: userId } });
     if (user!.walletAddress)

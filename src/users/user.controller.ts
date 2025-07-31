@@ -26,7 +26,7 @@ import { MessageResponseDto } from 'src/utlis/dto/messageResponse.dto';
 import { UserSkillDto } from './dto/userSkill.dto';
 @Controller('users')
 export class UserController {
-  constructor(private readonly userService: UserService) { }
+  constructor(private readonly userService: UserService) {}
 
   @ApiOkResponse({
     description: 'Returns all languages for a user',
@@ -64,8 +64,6 @@ export class UserController {
     description: 'Returns all UserSkill records from database',
     type: [UserSkillDto],
   })
- 
-
   @ApiOkResponse({
     description: 'Returns one user by ID',
     type: UserDto,
