@@ -153,8 +153,6 @@ export class UserService {
       include: { skill: true }, // if you want skill details
     });
   }
-<<<<<<< HEAD
-=======
 
 
   
@@ -184,5 +182,4 @@ export class UserService {
       return false;
     }
   }
->>>>>>> origin/working/test_branch
 }
