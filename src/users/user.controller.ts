@@ -135,9 +135,4 @@ export class UserController {
     await this.userService.setWalletAddress(userId!, setAddressDto);
     return { message: 'Wallet address updated successfully' };
   }
-
-  @Get(':id/skills')
-  async getUserSkills(@Param('id') id: string) {
-    return this.userService.getSkillsForUser(Number(id));
-  }
 }
