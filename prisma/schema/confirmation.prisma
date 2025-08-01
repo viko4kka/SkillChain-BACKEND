@@ -1,0 +1,10 @@
+model Confirmation {
+  id            Int   @id @default(autoincrement())
+  skillId       Int
+  receiverId    Int
+  approverId    Int
+  txnHash       String
+  skill         Skill @relation(fields: [skillId], references: [id])
+  receiver      User  @relation("Receiver", fields: [receiverId], references: [id])
+  approver      User  @relation("Approver", fields: [approverId], references: [id])
+}
