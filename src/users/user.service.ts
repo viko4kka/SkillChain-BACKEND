@@ -9,10 +9,12 @@ import { UpdateUserProfileDto } from './dto/updateUserProfile.dto';
 import { GetUsersQueryDto } from './dto/getUsers.dto';
 import { LanguageDto } from '../common/dto/language.dto';
 import { UserSkillInputDto } from './dto/updateUserSkills.dto';
+import { ConfirmSkillDto } from './dto/confirmSkill.dto';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class UserService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(private readonly prisma: PrismaService, private readonly configService: ConfigService) {}
 
   async getUsers(query: GetUsersQueryDto): Promise<UserDto[]> {
     if (query.search) {
@@ -166,5 +168,26 @@ export class UserService {
     } catch {
       return false;
     }
+  }
+
+  async confirmSkill(approverId: number, confirmSkillDto: ConfirmSkillDto) {
+    const provider = new ethers.JsonRpcProvider(this.configService.get<string>('RPC_URL'));
+    const txnHash = await provider.getTransaction(confirmSkillDto.txnHash);
+    if (!txnHash) {
+      throw new ForbiddenException('Transaction not found');
+    }
+    const receipt = await provider.getTransactionReceipt(confirmSkillDto.txnHash);
+    if (!receipt || receipt.logs.length === 0) {
+      throw new ForbiddenException('No events found for this transaction');
+    }
+    const newConfirmation = await this.prisma.confirmation.create({
+      data: {
+        skillId: confirmSkillDto.skillId,
+        receiverId: confirmSkillDto.receiverId,
+        approverId,
+        txnHash: confirmSkillDto.txnHash,
+      },
+    });
+    return plainToInstance(ConfirmSkillDto, newConfirmation);
   }
 }

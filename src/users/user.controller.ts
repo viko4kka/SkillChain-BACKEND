@@ -23,6 +23,7 @@ import { SetAddressDto } from './dto/setAddress.dto';
 import { UpdateUserProfileDto } from './dto/updateUserProfile.dto';
 import { LanguageDto } from 'src/common/dto/language.dto';
 import { MessageResponseDto } from 'src/utlis/dto/messageResponse.dto';
+import { ConfirmSkillDto } from './dto/confirmSkill.dto';
 
 @Controller('users')
 export class UserController {
@@ -126,4 +127,16 @@ export class UserController {
     await this.userService.setWalletAddress(userId!, setAddressDto);
     return { message: 'Wallet address updated successfully' };
   }
+
+  @Post('skills/confirmation')
+  @UseGuards(AuthGuard)
+  async confirmSkill(
+    @Session() session: SessionData,
+    @Body() confirmSkillDto: ConfirmSkillDto,
+  ) : Promise<MessageResponseDto> {
+    const approverId = session.user?.id;
+    await this.userService.confirmSkill(approverId!, confirmSkillDto);
+    return { message: 'Skill confirmation successful' };
+  }
+
 }
