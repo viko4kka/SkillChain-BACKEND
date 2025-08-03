@@ -6,9 +6,12 @@ export class ConfirmSkillDto {
   @IsInt()
   skillId: number;
 
-  @ApiProperty({ description: 'The ID of the user receiving the skill confirmation', type: Number })
-  @IsInt()
-  receiverId: number;
+  @ApiProperty({
+    description: 'The wallet address of the user receiving the skill confirmation',
+    type: String,
+  })
+  @IsString()
+  receiverWallet: string;
 
   @ApiProperty({ description: 'The transaction hash for the skill confirmation', type: String })
   @IsString()

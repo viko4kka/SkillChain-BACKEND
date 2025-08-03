@@ -133,10 +133,10 @@ export class UserController {
   async confirmSkill(
     @Session() session: SessionData,
     @Body() confirmSkillDto: ConfirmSkillDto,
-  ) : Promise<MessageResponseDto> {
+  ): Promise<MessageResponseDto> {
     const approverId = session.user?.id;
-    await this.userService.confirmSkill(approverId!, confirmSkillDto);
+    const approverAddress = session.user?.walletAddress;
+    await this.userService.confirmSkill(approverId!, approverAddress!, confirmSkillDto);
     return { message: 'Skill confirmation successful' };
   }
-
 }

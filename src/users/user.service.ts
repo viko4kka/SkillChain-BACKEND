@@ -2,6 +2,7 @@ import { ForbiddenException, Injectable } from '@nestjs/common';
 import { PrismaService } from 'prisma/prisma.service';
 import { UserDto } from './dto/user.dto';
 import { ethers } from 'ethers';
+import ContractABI from '../contracts/SkillToken.abi.json';
 import { SetAddressDto } from './dto/setAddress.dto';
 import { plainToInstance } from 'class-transformer';
 import { CreateUserInput } from './interfaces/createUserInput.interface';
@@ -14,7 +15,10 @@ import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class UserService {
-  constructor(private readonly prisma: PrismaService, private readonly configService: ConfigService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly configService: ConfigService,
+  ) {}
 
   async getUsers(query: GetUsersQueryDto): Promise<UserDto[]> {
     if (query.search) {
@@ -170,20 +174,57 @@ export class UserService {
     }
   }
 
-  async confirmSkill(approverId: number, confirmSkillDto: ConfirmSkillDto) {
+  async confirmSkill(
+    approverId: number,
+    approverAddress: string,
+    confirmSkillDto: ConfirmSkillDto,
+  ) {
     const provider = new ethers.JsonRpcProvider(this.configService.get<string>('RPC_URL'));
+    const contractAddress = this.configService.get<string>('CONTRACT_ADDRESS');
     const txnHash = await provider.getTransaction(confirmSkillDto.txnHash);
+    const receipt = await provider.getTransactionReceipt(confirmSkillDto.txnHash);
+    const iface = new ethers.Interface(ContractABI);
+
     if (!txnHash) {
       throw new ForbiddenException('Transaction not found');
     }
-    const receipt = await provider.getTransactionReceipt(confirmSkillDto.txnHash);
     if (!receipt || receipt.logs.length === 0) {
       throw new ForbiddenException('No events found for this transaction');
+    }
+    if (!approverAddress) {
+      throw new ForbiddenException('Approver wallet address not found');
+    }
+
+    const receiver = await this.prisma.user.findUnique({
+      where: { walletAddress: confirmSkillDto.receiverWallet },
+    });
+    if (!receiver) {
+      throw new ForbiddenException('Receiver wallet address not found');
+    }
+
+    const relevantLogs = receipt.logs.filter(
+      log => log.address.toLowerCase() === contractAddress!.toLowerCase(),
+    );
+    const foundEvent = relevantLogs.some(log => {
+      try {
+        const parsedLog = iface.parseLog(log);
+        return (
+          parsedLog!.name === 'TokenMinted' &&
+          parsedLog!.args.from.toLowerCase() === approverAddress.toLowerCase() &&
+          parsedLog!.args.to.toLowerCase() === confirmSkillDto.receiverWallet.toLowerCase() &&
+          parsedLog!.args.skillId.toString() === confirmSkillDto.skillId.toString()
+        );
+      } catch {
+        return false;
+      }
+    });
+    if (!foundEvent) {
+      throw new ForbiddenException('No matching TokenMinted event found in transaction');
     }
     const newConfirmation = await this.prisma.confirmation.create({
       data: {
         skillId: confirmSkillDto.skillId,
-        receiverId: confirmSkillDto.receiverId,
+        receiverId: receiver.id,
         approverId,
         txnHash: confirmSkillDto.txnHash,
       },
