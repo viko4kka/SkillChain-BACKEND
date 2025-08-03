@@ -1,6 +1,8 @@
-import { Injectable } from '@nestjs/common';
+import { ForbiddenException, Injectable } from '@nestjs/common';
 import { PrismaService } from 'prisma/prisma.service';
 import { UserDto } from './dto/user.dto';
+import { ethers } from 'ethers';
+import { SetAddressDto } from './dto/setAddress.dto';
 import { plainToInstance } from 'class-transformer';
 import { CreateUserInput } from './interfaces/createUserInput.interface';
 import { UpdateUserProfileDto } from './dto/updateUserProfile.dto';
@@ -174,5 +176,32 @@ export class UserService {
       select: { skillId: true, description: true },
     });
     return plainToInstance(UserSkillInputDto, dbSkills);
+  }
+
+  async setWalletAddress(userId: number, setAddressDto: SetAddressDto) {
+    const user = await this.prisma.user.findUnique({ where: { id: userId } });
+    if (user!.walletAddress)
+      throw new ForbiddenException('Wallet address already set and cannot be changed');
+    const message = JSON.stringify({ id: userId });
+    const isValid = this.verifyWalletSignature(
+      setAddressDto.walletAddress,
+      setAddressDto.signature,
+      message,
+    );
+    if (!isValid) throw new ForbiddenException('Invalid wallet signature');
+
+    return this.prisma.user.update({
+      where: { id: userId },
+      data: { walletAddress: setAddressDto.walletAddress },
+    });
+  }
+
+  verifyWalletSignature(walletAddress: string, signature: string, message: string): boolean {
+    try {
+      const signer = ethers.verifyMessage(message, signature);
+      return signer.toLowerCase() === walletAddress.toLowerCase();
+    } catch {
+      return false;
+    }
   }
 }
