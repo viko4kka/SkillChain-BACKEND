@@ -198,15 +198,17 @@ export class UserService {
           return null;
         }
       })
-      .find(event => 
-        event &&
-        event.name === 'TokenMinted' &&
-        event.args.from.toLowerCase() === approverAddress.toLowerCase() &&
-        event.args.to.toLowerCase() === confirmSkillDto.receiverWallet.toLowerCase() &&
-        event.args.skillId.toString() === confirmSkillDto.skillId.toString()
+      .find(
+        event =>
+          event &&
+          event.name === 'TokenMinted' &&
+          (event.args.from as string).toLowerCase() === approverAddress.toLowerCase() &&
+          (event.args.to as string).toLowerCase() ===
+            confirmSkillDto.receiverWallet.toLowerCase() &&
+          (event.args.skillId as string).toString() === confirmSkillDto.skillId.toString(),
       );
 
-    if (!events) throw new ForbiddenException('Data invalid or not found in transaction');
+    if (!events) throw new ForbiddenException('Data invalid or not found in transaction events');
 
     const receiver = await this.prisma.user.findUnique({
       where: { walletAddress: confirmSkillDto.receiverWallet },
@@ -225,8 +227,9 @@ export class UserService {
         approverId,
       },
     });
-    if (duplicateConfirmation) throw new ForbiddenException('Skill already confirmed for this user');
-    
+    if (duplicateConfirmation)
+      throw new ForbiddenException('Skill already confirmed for this user');
+
     const newConfirmation = await this.prisma.confirmation.create({
       data: {
         skillId: confirmSkillDto.skillId,
