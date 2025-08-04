@@ -15,6 +15,7 @@ import { LanguageDto } from 'src/common/dto/language.dto';
 import { AuthGuard } from '../auth/guards/auth.guard';
 import { SessionData } from 'express-session';
 import { UserLanguageDto } from './dto/userLanguage.dto';
+import { UpdateUserLanguageDto } from './dto/updateLanguage.dto';
 
 @Controller('languages')
 export class LanguageController {
@@ -41,5 +42,20 @@ export class LanguageController {
   ) {
     const userId = session.user?.id;
     return this.languageService.createLanguage(createLanguageDto, 21);
+  }
+
+  @ApiOkResponse({
+    description: 'Updates a language for the logged-in user',
+    type: UserLanguageDto,
+  })
+  @Patch(':id')
+  @UseGuards(AuthGuard)
+  async updateLanguage(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() updateDto: UpdateUserLanguageDto,
+    @Session() session: SessionData,
+  ) {
+    const userId = session.user?.id;
+    return this.languageService.updateLanguage(userId!, id, updateDto);
   }
 }
