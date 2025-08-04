@@ -19,9 +19,11 @@ import { ApiOkResponse } from '@nestjs/swagger';
 import { SessionData } from 'express-session';
 import { UpdateUserSkillsDto, UserSkillInputDto } from './dto/updateUserSkills.dto';
 import { AuthGuard } from '../auth/guards/auth.guard';
+import { SetAddressDto } from './dto/setAddress.dto';
 import { UpdateUserProfileDto } from './dto/updateUserProfile.dto';
 import { LanguageDto } from 'src/common/dto/language.dto';
 import { MessageResponseDto } from 'src/utlis/dto/messageResponse.dto';
+import { ConfirmSkillDto } from './dto/confirmSkill.dto';
 
 @Controller('users')
 export class UserController {
@@ -109,5 +111,32 @@ export class UserController {
   async setSkillsForUser(@Session() session: SessionData, @Body() body: UpdateUserSkillsDto) {
     const userId = session.user?.id;
     return this.userService.setSkillsForUser(userId!, body.skills);
+  }
+
+  @ApiOkResponse({
+    description: 'Assigns a wallet address to a user',
+    type: MessageResponseDto,
+  })
+  @Patch('wallet')
+  @UseGuards(AuthGuard)
+  async setWalletAddress(
+    @Session() session: SessionData,
+    @Body() setAddressDto: SetAddressDto,
+  ): Promise<MessageResponseDto> {
+    const userId = session.user?.id;
+    await this.userService.setWalletAddress(userId!, setAddressDto);
+    return { message: 'Wallet address updated successfully' };
+  }
+
+  @Post('skills/confirmation')
+  @UseGuards(AuthGuard)
+  async confirmSkill(
+    @Session() session: SessionData,
+    @Body() confirmSkillDto: ConfirmSkillDto,
+  ): Promise<MessageResponseDto> {
+    const approverId = session.user?.id;
+    const approverAddress = session.user?.walletAddress;
+    await this.userService.confirmSkill(approverId!, approverAddress!, confirmSkillDto);
+    return { message: 'Skill confirmation successful' };
   }
 }

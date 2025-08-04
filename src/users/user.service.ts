@@ -1,16 +1,24 @@
-import { Injectable } from '@nestjs/common';
+import { ForbiddenException, Injectable } from '@nestjs/common';
 import { PrismaService } from 'prisma/prisma.service';
 import { UserDto } from './dto/user.dto';
+import { ethers } from 'ethers';
+import ContractABI from '../contracts/SkillToken.abi.json';
+import { SetAddressDto } from './dto/setAddress.dto';
 import { plainToInstance } from 'class-transformer';
 import { CreateUserInput } from './interfaces/createUserInput.interface';
 import { UpdateUserProfileDto } from './dto/updateUserProfile.dto';
 import { GetUsersQueryDto } from './dto/getUsers.dto';
 import { LanguageDto } from '../common/dto/language.dto';
 import { UserSkillInputDto } from './dto/updateUserSkills.dto';
+import { ConfirmSkillDto } from './dto/confirmSkill.dto';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class UserService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly configService: ConfigService,
+  ) {}
 
   async getUsers(query: GetUsersQueryDto): Promise<UserDto[]> {
     if (query.search) {
@@ -137,5 +145,90 @@ export class UserService {
       select: { skillId: true, description: true },
     });
     return plainToInstance(UserSkillInputDto, dbSkills);
+  }
+
+  async setWalletAddress(userId: number, setAddressDto: SetAddressDto) {
+    const user = await this.prisma.user.findUnique({ where: { id: userId } });
+    if (user!.walletAddress)
+      throw new ForbiddenException('Wallet address already set and cannot be changed');
+    const message = JSON.stringify({ id: userId });
+    const isValid = this.verifyWalletSignature(
+      setAddressDto.walletAddress,
+      setAddressDto.signature,
+      message,
+    );
+    if (!isValid) throw new ForbiddenException('Invalid wallet signature');
+
+    return this.prisma.user.update({
+      where: { id: userId },
+      data: { walletAddress: setAddressDto.walletAddress },
+    });
+  }
+
+  verifyWalletSignature(walletAddress: string, signature: string, message: string): boolean {
+    try {
+      const signer = ethers.verifyMessage(message, signature);
+      return signer.toLowerCase() === walletAddress.toLowerCase();
+    } catch {
+      return false;
+    }
+  }
+
+  async confirmSkill(
+    approverId: number,
+    approverAddress: string,
+    confirmSkillDto: ConfirmSkillDto,
+  ) {
+    const provider = new ethers.JsonRpcProvider(this.configService.get<string>('RPC_URL'));
+    const contractAddress = this.configService.get<string>('CONTRACT_ADDRESS');
+    const txnHash = await provider.getTransaction(confirmSkillDto.txnHash);
+    const receipt = await provider.getTransactionReceipt(confirmSkillDto.txnHash);
+    const iface = new ethers.Interface(ContractABI);
+
+    if (!txnHash) {
+      throw new ForbiddenException('Transaction not found');
+    }
+    if (!receipt || receipt.logs.length === 0) {
+      throw new ForbiddenException('No events found for this transaction');
+    }
+    if (!approverAddress) {
+      throw new ForbiddenException('Approver wallet address not found');
+    }
+
+    const receiver = await this.prisma.user.findUnique({
+      where: { walletAddress: confirmSkillDto.receiverWallet },
+    });
+    if (!receiver) {
+      throw new ForbiddenException('Receiver wallet address not found');
+    }
+
+    const relevantLogs = receipt.logs.filter(
+      log => log.address.toLowerCase() === contractAddress!.toLowerCase(),
+    );
+    const foundEvent = relevantLogs.some(log => {
+      try {
+        const parsedLog = iface.parseLog(log);
+        return (
+          parsedLog!.name === 'TokenMinted' &&
+          parsedLog!.args.from.toLowerCase() === approverAddress.toLowerCase() &&
+          parsedLog!.args.to.toLowerCase() === confirmSkillDto.receiverWallet.toLowerCase() &&
+          parsedLog!.args.skillId.toString() === confirmSkillDto.skillId.toString()
+        );
+      } catch {
+        return false;
+      }
+    });
+    if (!foundEvent) {
+      throw new ForbiddenException('No matching TokenMinted event found in transaction');
+    }
+    const newConfirmation = await this.prisma.confirmation.create({
+      data: {
+        skillId: confirmSkillDto.skillId,
+        receiverId: receiver.id,
+        approverId,
+        txnHash: confirmSkillDto.txnHash,
+      },
+    });
+    return plainToInstance(ConfirmSkillDto, newConfirmation);
   }
 }
