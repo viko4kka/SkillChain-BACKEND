@@ -15,7 +15,14 @@ import { DisplayUserDto } from './dto/displayUser.dto';
 export class UserService {
   constructor(private readonly prisma: PrismaService) {}
 
-  //i use here prisma because this method is easier to write instead of using raw query
+  /**
+   * Retrieves a list of users filtered by optional query parameters such as search term,
+   * skill, language, and location. Uses Prisma for easier query composition and readability
+   * instead of raw SQL.
+   *
+   * @param query - Filtering options for retrieving users
+   * @returns A list of users mapped to the DisplayUserDto format
+   */
   async getUsers(query: GetUsersQueryDto): Promise<DisplayUserDto[]> {
     const users = await this.prisma.user.findMany({
       where: {
@@ -45,39 +52,7 @@ export class UserService {
         },
       },
     });
-    // const users = await this.prisma.$queryRawUnsafe<
-    //   Array<{
-    //     id: number;
-    //     firstName: string;
-    //     lastName: string;
-    //     email?: string;
-    //     job: string | null;
-    //     description: string | null;
-    //     gitUrl: string | null;
-    //     linkedinUrl: string | null;
-    //     linkedinVisits: number;
-    //     githubVisits: number;
-    //     imgUrl: string | null;
-    //     skills: string | null;
-    //     locationName: string | null;
-    //     languages: string | null;
-    //   }>
-    // >(
-    //   `SELECT u.id, u."firstName", u."lastName", u."email", u."job", u."description", u."gitUrl", u."linkedinUrl",
-    //   u."linkedinVisits", u."githubVisits", u."imgUrl",
-    //   COALESCE(string_agg(s.name, ', ' ORDER BY s.name), '') as "skills",
-    //   l.name as "locationName"
-    //   FROM "User" u
-    //   LEFT JOIN "UserSkill" us ON u.id = us."userId"
-    //   LEFT JOIN "Skill" s ON us."skillId" = s.id
-    //   LEFT JOIN "Location" l ON u."locationId" = l.id
-    //   LEFT JOIN "Language" lang ON u."languageId" = lang.id
-    //   ${query.search ? 'WHERE similarity(u."firstName", $1) > 0.2 OR similarity(u."lastName", $1) > 0.2' : ''}
-    //   GROUP BY u.id, u."firstName", u."lastName", u."email", u."job", u."description", u."gitUrl", u."linkedinUrl",
-    //   u."linkedinVisits", u."githubVisits", u."imgUrl", l."name"
-    //   ${query.search ? 'ORDER BY GREATEST(similarity(u."firstName", $1), similarity(u."lastName", $1)) DESC' : 'ORDER BY u."firstName", u."lastName"'}`,
-    //   ...(query.search ? [query.search] : []),
-    // );
+
     return plainToInstance(DisplayUserDto, users);
   }
 
