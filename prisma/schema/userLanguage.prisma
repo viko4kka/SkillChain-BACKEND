@@ -1,6 +1,7 @@
 model UserLanguage {
-    userId     Int
-    languageId Int
+    userId      Int
+    languageId  Int
+    description String?
 
     user     User     @relation(fields: [userId], references: [id])
     language Language @relation(fields: [languageId], references: [id])
