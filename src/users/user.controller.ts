@@ -23,6 +23,8 @@ import { SetAddressDto } from './dto/setAddress.dto';
 import { UpdateUserProfileDto } from './dto/updateUserProfile.dto';
 import { LanguageDto } from 'src/common/dto/language.dto';
 import { MessageResponseDto } from 'src/utlis/dto/messageResponse.dto';
+import { UserLanguageDto } from './dto/getUserLanguage.dto';
+import { UpdateUserLanguageDto } from './dto/updateUserLanguage.dto';
 
 @Controller('users')
 export class UserController {
@@ -39,16 +41,16 @@ export class UserController {
 
   @ApiOkResponse({
     description: 'Updates user languages',
-    type: [LanguageDto],
+    type: [UpdateUserLanguageDto],
   })
   @Post('languages')
   @UseGuards(AuthGuard)
   async updateUserLanguages(
-    @Body() languageIds: number[],
+    @Body() languages: UserLanguageDto[],
     @Session() session: SessionData,
-  ): Promise<LanguageDto[]> {
+  ): Promise<UpdateUserLanguageDto[]> {
     const userId = session.user?.id;
-    return this.userService.updateUserLanguages(userId!, languageIds);
+    return this.userService.updateUserLanguages(userId!, languages);
   }
 
   @ApiOkResponse({

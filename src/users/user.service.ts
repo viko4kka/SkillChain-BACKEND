@@ -7,9 +7,9 @@ import { plainToInstance } from 'class-transformer';
 import { CreateUserInput } from './interfaces/createUserInput.interface';
 import { UpdateUserProfileDto } from './dto/updateUserProfile.dto';
 import { GetUsersQueryDto } from './dto/getUsers.dto';
-import { LanguageDto } from '../common/dto/language.dto';
 import { UserSkillInputDto } from './dto/updateUserSkills.dto';
-import { UserLanguageDto } from './dto/userLanguage.dto';
+import { UserLanguageDto } from './dto/getUserLanguage.dto';
+import { UpdateUserLanguageDto } from './dto/updateUserLanguage.dto';
 
 @Injectable()
 export class UserService {
@@ -102,11 +102,11 @@ export class UserService {
   }
 
   // Post new language for a user
-  async updateUserLanguages(userId: number, languageIds: number[]) {
+  async updateUserLanguages(userId: number, languages: UserLanguageDto[]) {
     await this.prisma.userLanguage.deleteMany({ where: { userId } });
-    if (languageIds.length > 0) {
+    if (languages.length > 0) {
       await this.prisma.userLanguage.createMany({
-        data: languageIds.map(languageId => ({ userId, languageId })),
+        data: languages.map(({ id, description }) => ({ userId, languageId: id, description })),
       });
     }
     const userLanguages = await this.prisma.userLanguage.findMany({
@@ -114,10 +114,11 @@ export class UserService {
       include: { language: true },
     });
     return plainToInstance(
-      LanguageDto,
+      UpdateUserLanguageDto,
       userLanguages.map(ul => ({
         id: ul.language.id,
         name: ul.language.name,
+        description: ul.description,
       })),
     );
   }
