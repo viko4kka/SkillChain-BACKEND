@@ -1,8 +1,7 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { PrismaService } from 'prisma/prisma.service';
-import { UserLanguageDto } from './dto/getUserLanguage.dto';
-import { UpdateUserLanguageDto } from './dto/updateUserLanguage.dto';
 import { plainToInstance } from 'class-transformer';
+import { UserLanguageDto } from './dto/userLanguage.dto';
 
 @Injectable()
 export class LanguageService {
@@ -23,9 +22,9 @@ export class LanguageService {
   }
 
   async createLanguage(
-    createLanguageDto: UpdateUserLanguageDto,
+    createLanguageDto: UserLanguageDto,
     userId: number,
-  ): Promise<UpdateUserLanguageDto> {
+  ): Promise<UserLanguageDto> {
     const { id: languageId, description } = createLanguageDto;
 
     const userLanguage = await this.prisma.userLanguage.create({

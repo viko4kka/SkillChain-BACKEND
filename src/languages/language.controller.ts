@@ -14,8 +14,7 @@ import { ApiOkResponse } from '@nestjs/swagger';
 import { LanguageDto } from 'src/common/dto/language.dto';
 import { AuthGuard } from '../auth/guards/auth.guard';
 import { SessionData } from 'express-session';
-import { UserLanguageDto } from './dto/getUserLanguage.dto';
-import { UpdateUserLanguageDto } from './dto/updateUserLanguage.dto';
+import { UserLanguageDto } from './dto/userLanguage.dto';
 
 @Controller('languages')
 export class LanguageController {
@@ -23,7 +22,7 @@ export class LanguageController {
 
   @ApiOkResponse({
     description: 'Returns all languages for a user',
-    type: [LanguageDto],
+    type: [UserLanguageDto],
   })
   @Get('/user/:id')
   async getUserLanguages(@Param('id', ParseIntPipe) userId: number) {
@@ -38,9 +37,9 @@ export class LanguageController {
   @UseGuards(AuthGuard)
   async createLanguage(
     @Session() session: SessionData,
-    @Body() createLanguageDto: UpdateUserLanguageDto,
+    @Body() createLanguageDto: UserLanguageDto,
   ) {
     const userId = session.user?.id;
-    return this.languageService.createLanguage(createLanguageDto, userId!);
+    return this.languageService.createLanguage(createLanguageDto, 21);
   }
 }

@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsNumber, IsOptional, IsString } from 'class-validator';
 
-export class UpdateUserLanguageDto {
+export class UserLanguageDto {
   @ApiProperty({ description: 'Unique identifier for the language', type: Number })
   @IsNumber()
   id: number;
