@@ -8,8 +8,6 @@ import { CreateUserInput } from './interfaces/createUserInput.interface';
 import { UpdateUserProfileDto } from './dto/updateUserProfile.dto';
 import { GetUsersQueryDto } from './dto/getUsers.dto';
 import { UserSkillInputDto } from './dto/updateUserSkills.dto';
-import { UserLanguageDto } from './dto/getUserLanguage.dto';
-import { UpdateUserLanguageDto } from './dto/updateUserLanguage.dto';
 
 @Injectable()
 export class UserService {
@@ -73,20 +71,6 @@ export class UserService {
     });
   }
 
-  async getUserLanguages(userId: number): Promise<UserLanguageDto[]> {
-    const userLanguages = await this.prisma.userLanguage.findMany({
-      where: { userId },
-      include: { language: true },
-    });
-    return userLanguages
-      .filter(ul => ul.language)
-      .map(ul => ({
-        id: ul.language.id,
-        name: ul.language.name,
-        description: ul.description,
-      }));
-  }
-
   async incrementVisits(userId: number, type: 'linkedin' | 'github'): Promise<void> {
     if (type === 'linkedin') {
       await this.prisma.user.update({
@@ -99,28 +83,6 @@ export class UserService {
         data: { githubVisits: { increment: 1 } },
       });
     }
-  }
-
-  // Post new language for a user
-  async updateUserLanguages(userId: number, languages: UserLanguageDto[]) {
-    await this.prisma.userLanguage.deleteMany({ where: { userId } });
-    if (languages.length > 0) {
-      await this.prisma.userLanguage.createMany({
-        data: languages.map(({ id, description }) => ({ userId, languageId: id, description })),
-      });
-    }
-    const userLanguages = await this.prisma.userLanguage.findMany({
-      where: { userId },
-      include: { language: true },
-    });
-    return plainToInstance(
-      UpdateUserLanguageDto,
-      userLanguages.map(ul => ({
-        id: ul.language.id,
-        name: ul.language.name,
-        description: ul.description,
-      })),
-    );
   }
 
   async setSkillsForUser(
