@@ -2,7 +2,6 @@ import { ForbiddenException, Injectable } from '@nestjs/common';
 import { PrismaService } from 'prisma/prisma.service';
 import { UserDto } from './dto/user.dto';
 import { ethers } from 'ethers';
-import ContractABI from '../contracts/SkillToken.abi.json';
 import { SetAddressDto } from './dto/setAddress.dto';
 import { plainToInstance } from 'class-transformer';
 import { CreateUserInput } from './interfaces/createUserInput.interface';
@@ -180,47 +179,54 @@ export class UserService {
     confirmSkillDto: ConfirmSkillDto,
   ) {
     const provider = new ethers.JsonRpcProvider(this.configService.get<string>('RPC_URL'));
-    const contractAddress = this.configService.get<string>('CONTRACT_ADDRESS');
-    const txnHash = await provider.getTransaction(confirmSkillDto.txnHash);
-    const receipt = await provider.getTransactionReceipt(confirmSkillDto.txnHash);
-    const iface = new ethers.Interface(ContractABI);
+    const abi = [
+      'event TokenMinted(address indexed from, address indexed to, uint256 indexed skillId)',
+    ];
 
-    if (!txnHash) {
-      throw new ForbiddenException('Transaction not found');
-    }
-    if (!receipt || receipt.logs.length === 0) {
-      throw new ForbiddenException('No events found for this transaction');
-    }
-    if (!approverAddress) {
-      throw new ForbiddenException('Approver wallet address not found');
-    }
+    const txnHash = await provider.getTransaction(confirmSkillDto.txnHash);
+    if (!txnHash) throw new ForbiddenException('Transaction not found');
+
+    const receipt = await provider.getTransactionReceipt(confirmSkillDto.txnHash);
+    if (!receipt) throw new ForbiddenException('Transaction receipt not found');
+
+    const iface = new ethers.Interface(abi);
+    const events = receipt.logs
+      .map(log => {
+        try {
+          return iface.parseLog(log);
+        } catch {
+          return null;
+        }
+      })
+      .find(event => 
+        event &&
+        event.name === 'TokenMinted' &&
+        event.args.from.toLowerCase() === approverAddress.toLowerCase() &&
+        event.args.to.toLowerCase() === confirmSkillDto.receiverWallet.toLowerCase() &&
+        event.args.skillId.toString() === confirmSkillDto.skillId.toString()
+      );
+
+    if (!events) throw new ForbiddenException('Data invalid or not found in transaction');
 
     const receiver = await this.prisma.user.findUnique({
       where: { walletAddress: confirmSkillDto.receiverWallet },
     });
-    if (!receiver) {
-      throw new ForbiddenException('Receiver wallet address not found');
-    }
+    if (!receiver) throw new ForbiddenException('Receiver wallet address not found');
 
-    const relevantLogs = receipt.logs.filter(
-      log => log.address.toLowerCase() === contractAddress!.toLowerCase(),
-    );
-    const foundEvent = relevantLogs.some(log => {
-      try {
-        const parsedLog = iface.parseLog(log);
-        return (
-          parsedLog!.name === 'TokenMinted' &&
-          parsedLog!.args.from.toLowerCase() === approverAddress.toLowerCase() &&
-          parsedLog!.args.to.toLowerCase() === confirmSkillDto.receiverWallet.toLowerCase() &&
-          parsedLog!.args.skillId.toString() === confirmSkillDto.skillId.toString()
-        );
-      } catch {
-        return false;
-      }
+    const existingHash = await this.prisma.confirmation.findUnique({
+      where: { txnHash: confirmSkillDto.txnHash },
     });
-    if (!foundEvent) {
-      throw new ForbiddenException('No matching TokenMinted event found in transaction');
-    }
+    if (existingHash) throw new ForbiddenException('Transaction hash already exists');
+
+    const duplicateConfirmation = await this.prisma.confirmation.findFirst({
+      where: {
+        skillId: confirmSkillDto.skillId,
+        receiverId: receiver.id,
+        approverId,
+      },
+    });
+    if (duplicateConfirmation) throw new ForbiddenException('Skill already confirmed for this user');
+    
     const newConfirmation = await this.prisma.confirmation.create({
       data: {
         skillId: confirmSkillDto.skillId,
