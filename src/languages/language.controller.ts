@@ -15,7 +15,7 @@ import { LanguageDto } from 'src/common/dto/language.dto';
 import { AuthGuard } from '../auth/guards/auth.guard';
 import { SessionData } from 'express-session';
 import { UserLanguageDto } from './dto/getUserLanguage.dto';
-
+import { UpdateUserLanguageDto } from './dto/updateUserLanguage.dto';
 
 @Controller('languages')
 export class LanguageController {
@@ -38,10 +38,9 @@ export class LanguageController {
   @UseGuards(AuthGuard)
   async createLanguage(
     @Session() session: SessionData,
-    @Body() createLanguageDto: UserLanguageDto,
+    @Body() createLanguageDto: UpdateUserLanguageDto,
   ) {
     const userId = session.user?.id;
     return this.languageService.createLanguage(createLanguageDto, userId!);
   }
-
 }
