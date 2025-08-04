@@ -12,7 +12,6 @@ import {
 } from '@nestjs/common';
 import { LanguageService } from './language.service';
 import { ApiOkResponse } from '@nestjs/swagger';
-import { LanguageDto } from 'src/common/dto/language.dto';
 import { AuthGuard } from '../auth/guards/auth.guard';
 import { SessionData } from 'express-session';
 import { UserLanguageDto } from './dto/userLanguage.dto';
@@ -43,7 +42,7 @@ export class LanguageController {
     @Body() createLanguageDto: UserLanguageDto,
   ) {
     const userId = session.user?.id;
-    return this.languageService.createLanguage(createLanguageDto, 21);
+    return this.languageService.createLanguage(createLanguageDto, userId!);
   }
 
   @ApiOkResponse({
