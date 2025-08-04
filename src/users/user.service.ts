@@ -9,6 +9,7 @@ import { UpdateUserProfileDto } from './dto/updateUserProfile.dto';
 import { GetUsersQueryDto } from './dto/getUsers.dto';
 import { LanguageDto } from '../common/dto/language.dto';
 import { UserSkillInputDto } from './dto/updateUserSkills.dto';
+import { UserLanguageDto } from './dto/userLanguage.dto';
 
 @Injectable()
 export class UserService {
@@ -72,7 +73,7 @@ export class UserService {
     });
   }
 
-  async getUserLanguages(userId: number): Promise<LanguageDto[]> {
+  async getUserLanguages(userId: number): Promise<UserLanguageDto[]> {
     const userLanguages = await this.prisma.userLanguage.findMany({
       where: { userId },
       include: { language: true },
@@ -82,6 +83,7 @@ export class UserService {
       .map(ul => ({
         id: ul.language.id,
         name: ul.language.name,
+        description: ul.description,
       }));
   }
 
