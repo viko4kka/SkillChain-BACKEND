@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   Param,
   ParseIntPipe,
@@ -16,6 +17,7 @@ import { AuthGuard } from '../auth/guards/auth.guard';
 import { SessionData } from 'express-session';
 import { UserLanguageDto } from './dto/userLanguage.dto';
 import { UpdateUserLanguageDto } from './dto/updateLanguage.dto';
+import { MessageResponseDto } from 'src/utlis/dto/messageResponse.dto';
 
 @Controller('languages')
 export class LanguageController {
@@ -57,5 +59,20 @@ export class LanguageController {
   ) {
     const userId = session.user?.id;
     return this.languageService.updateLanguage(userId!, id, updateDto);
+  }
+
+  @ApiOkResponse({
+    description: 'Deletes a language for the logged-in user',
+    type: MessageResponseDto,
+  })
+  @Delete('/:languageId')
+  @UseGuards(AuthGuard)
+  async deleteLanguage(
+    @Param('languageId', ParseIntPipe) languageId: number,
+    @Session() session: SessionData,
+  ) {
+    const userId = session.user?.id;
+    await this.languageService.deleteLanguage(userId!, languageId);
+    return { message: 'Language deleted successfully' };
   }
 }

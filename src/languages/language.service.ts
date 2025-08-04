@@ -66,4 +66,14 @@ export class LanguageService {
     });
     return plainToInstance(UserLanguageDto, updatedLanguage);
   }
+
+  async deleteLanguage(userId: number, languageId: number): Promise<void> {
+    const userLanguage = await this.findOne(userId, languageId);
+    if (!userLanguage) {
+      throw new BadRequestException('Language not found for the user');
+    }
+    await this.prisma.userLanguage.delete({
+      where: { userId_languageId: { userId, languageId } },
+    });
+  }
 }
