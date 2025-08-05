@@ -62,13 +62,13 @@ export class SkillController {
     type: MessageResponseDto,
   })
   @Delete('/:skillId')
-  //@UseGuards(AuthGuard)
+  @UseGuards(AuthGuard)
   async deleteSkill(
     @Param('skillId', ParseIntPipe) skillId: number,
-    //@Session() session: SessionData,
+    @Session() session: SessionData,
   ) {
-    //const userId = session.user?.id;
-    await this.skillService.deleteSkill(21!, skillId);
+    const userId = session.user?.id;
+    await this.skillService.deleteSkill(userId!, skillId);
     return { message: 'Skill deleted successfully' };
   }
 }
