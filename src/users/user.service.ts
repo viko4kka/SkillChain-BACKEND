@@ -7,7 +7,6 @@ import { plainToInstance } from 'class-transformer';
 import { CreateUserInput } from './interfaces/createUserInput.interface';
 import { UpdateUserProfileDto } from './dto/updateUserProfile.dto';
 import { GetUsersQueryDto } from './dto/getUsers.dto';
-import { UserSkillInputDto } from './dto/updateUserSkills.dto';
 import { ConfirmSkillDto } from './dto/confirmSkill.dto';
 import { ConfigService } from '@nestjs/config';
 import { DisplayUserDto } from './dto/displayUser.dto';
@@ -94,34 +93,6 @@ export class UserService {
         data: { githubVisits: { increment: 1 } },
       });
     }
-  }
-
-  async setSkillsForUser(
-    userId: number,
-    skills: UserSkillInputDto[],
-  ): Promise<UserSkillInputDto[]> {
-    await this.prisma.userSkill.deleteMany({ where: { userId } });
-    if (skills.length > 0) {
-      await this.prisma.userSkill.createMany({
-        data: skills.map(skill => ({
-          userId,
-          skillId: skill.skillId,
-          description: skill.description ?? null,
-        })),
-      });
-    }
-    const dbSkills = await this.prisma.userSkill.findMany({
-      where: { userId },
-      select: { skillId: true, description: true },
-    });
-    return plainToInstance(UserSkillInputDto, dbSkills);
-  }
-
-  async getSkillsForUser(userId: number) {
-    return this.prisma.userSkill.findMany({
-      where: { userId },
-      include: { skill: true }, // if you want skill details
-    });
   }
 
   async setWalletAddress(userId: number, setAddressDto: SetAddressDto) {
