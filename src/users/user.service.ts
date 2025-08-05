@@ -16,7 +16,7 @@ export class UserService {
 
   async getUsers(query: GetUsersQueryDto): Promise<DisplayUserDto[]> {
     const whereClauses: string[] = [];
-    const params: any[] = [];
+    const params: (string | number)[] = [];
 
     if (query.search) {
       whereClauses.push(
