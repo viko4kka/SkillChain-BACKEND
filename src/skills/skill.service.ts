@@ -66,4 +66,14 @@ export class SkillService {
     });
     return plainToInstance(UserSkillDto, updatedSkill);
   }
+
+  async deleteSkill(userId: number, skillId: number): Promise<void> {
+    const userSkill = await this.findOne(userId, skillId);
+    if (!userSkill) {
+      throw new BadRequestException('Skill not found for the user');
+    }
+    await this.prisma.userSkill.delete({
+      where: { userId_skillId: { userId, skillId } },
+    });
+  }
 }

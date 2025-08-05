@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   Param,
   ParseIntPipe,
@@ -15,6 +16,7 @@ import { UserSkillDto } from './dto/userSkill.dto';
 import { SessionData } from 'express-session';
 import { AuthGuard } from 'src/auth/guards/auth.guard';
 import { UpdateUserSkillDto } from './dto/updateUserSkill.dto';
+import { MessageResponseDto } from 'src/utlis/dto/messageResponse.dto';
 
 @Controller('skills')
 export class SkillController {
@@ -53,5 +55,20 @@ export class SkillController {
   ) {
     const userId = session.user?.id;
     return this.skillService.updateSkill(userId!, id, updateDto);
+  }
+
+  @ApiOkResponse({
+    description: 'Deletes a skill for the logged-in user',
+    type: MessageResponseDto,
+  })
+  @Delete('/:skillId')
+  //@UseGuards(AuthGuard)
+  async deleteSkill(
+    @Param('skillId', ParseIntPipe) skillId: number,
+    //@Session() session: SessionData,
+  ) {
+    //const userId = session.user?.id;
+    await this.skillService.deleteSkill(21!, skillId);
+    return { message: 'Skill deleted successfully' };
   }
 }
