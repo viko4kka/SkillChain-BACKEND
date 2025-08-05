@@ -7,7 +7,6 @@ import { plainToInstance } from 'class-transformer';
 import { CreateUserInput } from './interfaces/createUserInput.interface';
 import { UpdateUserProfileDto } from './dto/updateUserProfile.dto';
 import { GetUsersQueryDto } from './dto/getUsers.dto';
-import { LanguageDto } from '../common/dto/language.dto';
 import { UserSkillInputDto } from './dto/updateUserSkills.dto';
 import { ConfirmSkillDto } from './dto/confirmSkill.dto';
 import { ConfigService } from '@nestjs/config';
@@ -77,19 +76,6 @@ export class UserService {
     });
   }
 
-  async getUserLanguages(userId: number): Promise<LanguageDto[]> {
-    const userLanguages = await this.prisma.userLanguage.findMany({
-      where: { userId },
-      include: { language: true },
-    });
-    return userLanguages
-      .filter(ul => ul.language)
-      .map(ul => ({
-        id: ul.language.id,
-        name: ul.language.name,
-      }));
-  }
-
   async incrementVisits(userId: number, type: 'linkedin' | 'github'): Promise<void> {
     if (type === 'linkedin') {
       await this.prisma.user.update({
@@ -102,27 +88,6 @@ export class UserService {
         data: { githubVisits: { increment: 1 } },
       });
     }
-  }
-
-  // Post new language for a user
-  async updateUserLanguages(userId: number, languageIds: number[]) {
-    await this.prisma.userLanguage.deleteMany({ where: { userId } });
-    if (languageIds.length > 0) {
-      await this.prisma.userLanguage.createMany({
-        data: languageIds.map(languageId => ({ userId, languageId })),
-      });
-    }
-    const userLanguages = await this.prisma.userLanguage.findMany({
-      where: { userId },
-      include: { language: true },
-    });
-    return plainToInstance(
-      LanguageDto,
-      userLanguages.map(ul => ({
-        id: ul.language.id,
-        name: ul.language.name,
-      })),
-    );
   }
 
   async setSkillsForUser(

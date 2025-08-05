@@ -8,6 +8,7 @@ import { AppController } from './app.controller';
 import { PrismaModule } from 'prisma/prisma.module';
 import { ProjectsModule } from './projects/projects.module';
 import { CommonModule } from './common/common.module';
+import { LanguageModule } from './languages/language.module';
 
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import { CommonModule } from './common/common.module';
     UserModule,
     AuthModule,
     CommonModule,
+    LanguageModule,
     ProjectsModule,
     PrismaModule,
   ],

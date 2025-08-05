@@ -21,36 +21,12 @@ import { UpdateUserSkillsDto, UserSkillInputDto } from './dto/updateUserSkills.d
 import { AuthGuard } from '../auth/guards/auth.guard';
 import { SetAddressDto } from './dto/setAddress.dto';
 import { UpdateUserProfileDto } from './dto/updateUserProfile.dto';
-import { LanguageDto } from 'src/common/dto/language.dto';
 import { MessageResponseDto } from 'src/utlis/dto/messageResponse.dto';
 import { ConfirmSkillDto } from './dto/confirmSkill.dto';
 
 @Controller('users')
 export class UserController {
   constructor(private readonly userService: UserService) {}
-
-  @ApiOkResponse({
-    description: 'Returns all languages for a user',
-    type: [LanguageDto],
-  })
-  @Get(':id/languages')
-  async getUserLanguages(@Param('id', ParseIntPipe) userId: number) {
-    return await this.userService.getUserLanguages(userId);
-  }
-
-  @ApiOkResponse({
-    description: 'Updates user languages',
-    type: [LanguageDto],
-  })
-  @Post('languages')
-  @UseGuards(AuthGuard)
-  async updateUserLanguages(
-    @Body() languageIds: number[],
-    @Session() session: SessionData,
-  ): Promise<LanguageDto[]> {
-    const userId = session.user?.id;
-    return this.userService.updateUserLanguages(userId!, languageIds);
-  }
 
   @ApiOkResponse({
     description: 'Returns all users',
