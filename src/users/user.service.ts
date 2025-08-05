@@ -25,11 +25,21 @@ export class UserService {
       params.push(query.search);
     }
     if (query.skillId) {
-      whereClauses.push('us."skillId" = $' + (params.length + 1));
+      whereClauses.push(`
+    EXISTS (
+      SELECT 1 FROM "UserSkill" us2
+      WHERE us2."userId" = u.id AND us2."skillId" = $${params.length + 1}
+    )
+  `);
       params.push(Number(query.skillId));
     }
     if (query.languageId) {
-      whereClauses.push('ul."languageId" = $' + (params.length + 1));
+      whereClauses.push(`
+    EXISTS (
+      SELECT 1 FROM "UserLanguage" ul2
+      WHERE ul2."userId" = u.id AND ul2."languageId" = $${params.length + 1}
+    )
+  `);
       params.push(Number(query.languageId));
     }
     if (query.locationId) {

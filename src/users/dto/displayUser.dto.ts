@@ -1,20 +1,14 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { UserDto } from './user.dto';
+import { SkillDto } from 'src/common/dto/skill.dto';
+import { LanguageDto } from 'src/common/dto/language.dto';
+import { LocationDto } from 'src/common/dto/location.dto';
 
-type UserSkillType = {
-  id: number;
-  name: string;
-};
+type UserSkillType = SkillDto;
 
-type UserLanguageType = {
-  id: number;
-  name: string;
-};
+type UserLanguageType = LanguageDto;
 
-type UserLocationType = {
-  id: number;
-  name: string;
-};
+type UserLocationType = LocationDto;
 
 export class DisplayUserDto extends UserDto {
   @ApiProperty({
