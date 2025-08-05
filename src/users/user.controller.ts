@@ -22,7 +22,7 @@ import { AuthGuard } from '../auth/guards/auth.guard';
 import { SetAddressDto } from './dto/setAddress.dto';
 import { UpdateUserProfileDto } from './dto/updateUserProfile.dto';
 import { MessageResponseDto } from 'src/utlis/dto/messageResponse.dto';
-
+import { UserSkillDto } from './dto/userSkill.dto';
 @Controller('users')
 export class UserController {
   constructor(private readonly userService: UserService) {}
@@ -36,6 +36,10 @@ export class UserController {
     return await this.userService.getUsers(getUsersQueryDto);
   }
 
+  @ApiOkResponse({
+    description: 'Returns all UserSkill records from database',
+    type: [UserSkillDto],
+  })
   @ApiOkResponse({
     description: 'Returns one user by ID',
     type: UserDto,
@@ -86,6 +90,11 @@ export class UserController {
   async setSkillsForUser(@Session() session: SessionData, @Body() body: UpdateUserSkillsDto) {
     const userId = session.user?.id;
     return this.userService.setSkillsForUser(userId!, body.skills);
+  }
+
+  @Get(':id/skills')
+  async getUserSkills(@Param('id') id: string) {
+    return this.userService.getSkillsForUser(Number(id));
   }
 
   @ApiOkResponse({
