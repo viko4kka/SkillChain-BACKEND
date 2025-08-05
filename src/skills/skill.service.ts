@@ -19,4 +19,21 @@ export class SkillService {
         description: us.description,
       }));
   }
+
+  async createSkill(createSkillDto: UserSkillDto, userId: number): Promise<UserSkillDto> {
+    const { id: skillId, description } = createSkillDto;
+
+    const userSkill = await this.prisma.userSkill.create({
+      data: {
+        userId,
+        skillId,
+        description,
+      },
+    });
+
+    return {
+      id: userSkill.skillId,
+      description: userSkill.description,
+    };
+  }
 }
