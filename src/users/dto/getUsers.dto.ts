@@ -10,4 +10,19 @@ export class GetUsersQueryDto {
   @IsOptional()
   @MaxLength(30)
   search?: string;
+
+  @ApiProperty()
+  @IsString()
+  @IsOptional()
+  skillId?: string;
+
+  @ApiProperty()
+  @IsString()
+  @IsOptional()
+  languageId?: string;
+
+  @ApiProperty()
+  @IsString()
+  @IsOptional()
+  locationId?: string;
 }
