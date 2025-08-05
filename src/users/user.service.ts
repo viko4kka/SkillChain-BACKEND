@@ -15,6 +15,30 @@ export class UserService {
   constructor(private readonly prisma: PrismaService) {}
 
   async getUsers(query: GetUsersQueryDto): Promise<DisplayUserDto[]> {
+    const whereClauses: string[] = [];
+    const params: any[] = [];
+
+    if (query.search) {
+      whereClauses.push(
+        '(similarity(u."firstName", $1) > 0.2 OR similarity(u."lastName", $1) > 0.2)',
+      );
+      params.push(query.search);
+    }
+    if (query.skillId) {
+      whereClauses.push('us."skillId" = $' + (params.length + 1));
+      params.push(Number(query.skillId));
+    }
+    if (query.languageId) {
+      whereClauses.push('ul."languageId" = $' + (params.length + 1));
+      params.push(Number(query.languageId));
+    }
+    if (query.locationId) {
+      whereClauses.push('u."locationId" = $' + (params.length + 1));
+      params.push(Number(query.locationId));
+    }
+
+    const whereSql = whereClauses.length ? 'WHERE ' + whereClauses.join(' AND ') : '';
+
     const users = await this.prisma.$queryRawUnsafe<
       Array<{
         id: number;
@@ -28,25 +52,52 @@ export class UserService {
         linkedinVisits: number;
         githubVisits: number;
         imgUrl: string | null;
-        skills: string | null;
-        locationName: string | null;
+        userSkills: { id: number; name: string }[];
+        userLanguages: { id: number; name: string }[];
+        location: { id: number; name: string } | null;
       }>
     >(
-      `SELECT u.id, u."firstName", u."lastName", u."email", u."job", u."description", u."gitUrl", u."linkedinUrl",
-      u."linkedinVisits", u."githubVisits", u."imgUrl", 
-      COALESCE(string_agg(s.name, ', ' ORDER BY s.name), '') as "skills",
-      l.name as "locationName"
-      FROM "User" u
-      LEFT JOIN "UserSkill" us ON u.id = us."userId"
-      LEFT JOIN "Skill" s ON us."skillId" = s.id
-      LEFT JOIN "Location" l ON u."locationId" = l.id
-      ${query.search ? 'WHERE similarity(u."firstName", $1) > 0.2 OR similarity(u."lastName", $1) > 0.2' : ''}
-      GROUP BY u.id, u."firstName", u."lastName", u."email", u."job", u."description", u."gitUrl", u."linkedinUrl",
-      u."linkedinVisits", u."githubVisits", u."imgUrl", l."name"
-      ${query.search ? 'ORDER BY GREATEST(similarity(u."firstName", $1), similarity(u."lastName", $1)) DESC' : 'ORDER BY u."firstName", u."lastName"'}`,
-      ...(query.search ? [query.search] : []),
+      `SELECT 
+      u.id, u."firstName", u."lastName", u."email", u."job", u."description", u."gitUrl", u."linkedinUrl",
+      u."linkedinVisits", u."githubVisits", u."imgUrl",
+      COALESCE(
+        json_agg(DISTINCT jsonb_build_object('id', s.id, 'name', s.name)) 
+        FILTER (WHERE s.id IS NOT NULL), '[]'
+      ) as "userSkills",
+      COALESCE(
+        json_agg(DISTINCT jsonb_build_object('id', lang.id, 'name', lang.name)) 
+        FILTER (WHERE lang.id IS NOT NULL), '[]'
+      ) as "userLanguages",
+      jsonb_build_object('id', l.id, 'name', l.name) as "location"
+    FROM "User" u
+    LEFT JOIN "UserSkill" us ON u.id = us."userId"
+    LEFT JOIN "Skill" s ON us."skillId" = s.id
+    LEFT JOIN "UserLanguage" ul ON u.id = ul."userId"
+    LEFT JOIN "Language" lang ON ul."languageId" = lang.id
+    LEFT JOIN "Location" l ON u."locationId" = l.id
+    ${whereSql}
+    GROUP BY u.id, l.id, l.name
+    ${query.search ? 'ORDER BY GREATEST(similarity(u."firstName", $1), similarity(u."lastName", $1)) DESC' : 'ORDER BY u."firstName", u."lastName"'}`,
+      ...params,
     );
-    return plainToInstance(DisplayUserDto, users);
+
+    const parsedUsers = users.map(u => ({
+      ...u,
+      userSkills:
+        typeof u.userSkills === 'string'
+          ? (JSON.parse(u.userSkills) as { id: number; name: string }[])
+          : u.userSkills,
+      userLanguages:
+        typeof u.userLanguages === 'string'
+          ? (JSON.parse(u.userLanguages) as { id: number; name: string }[])
+          : u.userLanguages,
+      location:
+        typeof u.location === 'string'
+          ? (JSON.parse(u.location) as { id: number; name: string } | null)
+          : u.location,
+    }));
+
+    return plainToInstance(DisplayUserDto, parsedUsers);
   }
 
   async findOneUser(id: number): Promise<UserDto | null> {
