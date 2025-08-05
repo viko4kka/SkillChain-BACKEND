@@ -45,13 +45,13 @@ export class SkillController {
     type: UserSkillDto,
   })
   @Patch(':id')
-  //@UseGuards(AuthGuard)
+  @UseGuards(AuthGuard)
   async updateSkill(
     @Param('id', ParseIntPipe) id: number,
     @Body() updateDto: UpdateUserSkillDto,
-    //@Session() session: SessionData,
+    @Session() session: SessionData,
   ) {
-    ///const userId = session.user?.id;
-    return this.skillService.updateSkill(21!, id, updateDto);
+    const userId = session.user?.id;
+    return this.skillService.updateSkill(userId!, id, updateDto);
   }
 }
