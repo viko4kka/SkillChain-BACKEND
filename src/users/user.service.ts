@@ -1,11 +1,12 @@
-import { Injectable } from '@nestjs/common';
+import { ForbiddenException, Injectable } from '@nestjs/common';
 import { PrismaService } from 'prisma/prisma.service';
 import { UserDto } from './dto/user.dto';
+import { ethers } from 'ethers';
+import { SetAddressDto } from './dto/setAddress.dto';
 import { plainToInstance } from 'class-transformer';
 import { CreateUserInput } from './interfaces/createUserInput.interface';
 import { UpdateUserProfileDto } from './dto/updateUserProfile.dto';
 import { GetUsersQueryDto } from './dto/getUsers.dto';
-import { LanguageDto } from '../common/dto/language.dto';
 import { UserSkillInputDto } from './dto/updateUserSkills.dto';
 
 @Injectable()
@@ -70,19 +71,6 @@ export class UserService {
     });
   }
 
-  async getUserLanguages(userId: number): Promise<LanguageDto[]> {
-    const userLanguages = await this.prisma.userLanguage.findMany({
-      where: { userId },
-      include: { language: true },
-    });
-    return userLanguages
-      .filter(ul => ul.language)
-      .map(ul => ({
-        id: ul.language.id,
-        name: ul.language.name,
-      }));
-  }
-
   async incrementVisits(userId: number, type: 'linkedin' | 'github'): Promise<void> {
     if (type === 'linkedin') {
       await this.prisma.user.update({
@@ -95,27 +83,6 @@ export class UserService {
         data: { githubVisits: { increment: 1 } },
       });
     }
-  }
-
-  // Post new language for a user
-  async updateUserLanguages(userId: number, languageIds: number[]) {
-    await this.prisma.userLanguage.deleteMany({ where: { userId } });
-    if (languageIds.length > 0) {
-      await this.prisma.userLanguage.createMany({
-        data: languageIds.map(languageId => ({ userId, languageId })),
-      });
-    }
-    const userLanguages = await this.prisma.userLanguage.findMany({
-      where: { userId },
-      include: { language: true },
-    });
-    return plainToInstance(
-      LanguageDto,
-      userLanguages.map(ul => ({
-        id: ul.language.id,
-        name: ul.language.name,
-      })),
-    );
   }
 
   async setSkillsForUser(
@@ -137,5 +104,32 @@ export class UserService {
       select: { skillId: true, description: true },
     });
     return plainToInstance(UserSkillInputDto, dbSkills);
+  }
+
+  async setWalletAddress(userId: number, setAddressDto: SetAddressDto) {
+    const user = await this.prisma.user.findUnique({ where: { id: userId } });
+    if (user!.walletAddress)
+      throw new ForbiddenException('Wallet address already set and cannot be changed');
+    const message = JSON.stringify({ id: userId });
+    const isValid = this.verifyWalletSignature(
+      setAddressDto.walletAddress,
+      setAddressDto.signature,
+      message,
+    );
+    if (!isValid) throw new ForbiddenException('Invalid wallet signature');
+
+    return this.prisma.user.update({
+      where: { id: userId },
+      data: { walletAddress: setAddressDto.walletAddress },
+    });
+  }
+
+  verifyWalletSignature(walletAddress: string, signature: string, message: string): boolean {
+    try {
+      const signer = ethers.verifyMessage(message, signature);
+      return signer.toLowerCase() === walletAddress.toLowerCase();
+    } catch {
+      return false;
+    }
   }
 }
