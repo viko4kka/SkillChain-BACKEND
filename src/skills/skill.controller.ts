@@ -12,7 +12,7 @@ import { SkillService } from './skill.service';
 import { ApiOkResponse } from '@nestjs/swagger';
 import { UserSkillDto } from './dto/userSkill.dto';
 import { SessionData } from 'express-session';
-import { AuthGuard } from '@nestjs/passport';
+import { AuthGuard } from 'src/auth/guards/auth.guard';
 
 @Controller('skills')
 export class SkillController {
@@ -33,9 +33,7 @@ export class SkillController {
   })
   @Post()
   @UseGuards(AuthGuard)
-  async createSkill(
-    @Session() session: SessionData, 
-    @Body() createSkillDto: UserSkillDto) {
+  async createSkill(@Session() session: SessionData, @Body() createSkillDto: UserSkillDto) {
     const userId = session.user?.id;
     return this.skillService.createSkill(createSkillDto, userId!);
   }
