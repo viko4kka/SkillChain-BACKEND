@@ -8,39 +8,45 @@ import { CreateUserInput } from './interfaces/createUserInput.interface';
 import { UpdateUserProfileDto } from './dto/updateUserProfile.dto';
 import { GetUsersQueryDto } from './dto/getUsers.dto';
 import { UserSkillInputDto } from './dto/updateUserSkills.dto';
+import { DisplayUserDto } from './dto/displayUser.dto';
 
 @Injectable()
 export class UserService {
   constructor(private readonly prisma: PrismaService) {}
 
-  async getUsers(query: GetUsersQueryDto): Promise<UserDto[]> {
-    if (query.search) {
-      const users = await this.prisma.$queryRawUnsafe<
-        Array<{
-          id: number;
-          firstName: string;
-          lastName: string;
-          email?: string;
-          job: string | null;
-          description: string | null;
-          gitUrl: string | null;
-          linkedinUrl: string | null;
-          linkedinVisits: number;
-          githubVisits: number;
-          imgUrl: string | null;
-        }>
-      >(
-        `SELECT id, "firstName", "lastName", "email", "job", "description", "gitUrl", "linkedinUrl",
-        "linkedinVisits", "githubVisits", "imgUrl"
-        FROM "User" WHERE similarity("firstName", $1) > 0.2 OR similarity("lastName", $1) > 0.2
-        ORDER BY GREATEST(similarity("firstName", $1), similarity("lastName", $1)) DESC`,
-        query.search,
-      );
-      return plainToInstance(UserDto, users);
-    } else {
-      const users = await this.prisma.user.findMany();
-      return plainToInstance(UserDto, users);
-    }
+  async getUsers(query: GetUsersQueryDto): Promise<DisplayUserDto[]> {
+    const users = await this.prisma.$queryRawUnsafe<
+      Array<{
+        id: number;
+        firstName: string;
+        lastName: string;
+        email?: string;
+        job: string | null;
+        description: string | null;
+        gitUrl: string | null;
+        linkedinUrl: string | null;
+        linkedinVisits: number;
+        githubVisits: number;
+        imgUrl: string | null;
+        skills: string | null;
+        locationName: string | null;
+      }>
+    >(
+      `SELECT u.id, u."firstName", u."lastName", u."email", u."job", u."description", u."gitUrl", u."linkedinUrl",
+      u."linkedinVisits", u."githubVisits", u."imgUrl", 
+      COALESCE(string_agg(s.name, ', ' ORDER BY s.name), '') as "skills",
+      l.name as "locationName"
+      FROM "User" u
+      LEFT JOIN "UserSkill" us ON u.id = us."userId"
+      LEFT JOIN "Skill" s ON us."skillId" = s.id
+      LEFT JOIN "Location" l ON u."locationId" = l.id
+      ${query.search ? 'WHERE similarity(u."firstName", $1) > 0.2 OR similarity(u."lastName", $1) > 0.2' : ''}
+      GROUP BY u.id, u."firstName", u."lastName", u."email", u."job", u."description", u."gitUrl", u."linkedinUrl",
+      u."linkedinVisits", u."githubVisits", u."imgUrl", l."name"
+      ${query.search ? 'ORDER BY GREATEST(similarity(u."firstName", $1), similarity(u."lastName", $1)) DESC' : 'ORDER BY u."firstName", u."lastName"'}`,
+      ...(query.search ? [query.search] : []),
+    );
+    return plainToInstance(DisplayUserDto, users);
   }
 
   async findOneUser(id: number): Promise<UserDto | null> {
@@ -104,6 +110,13 @@ export class UserService {
       select: { skillId: true, description: true },
     });
     return plainToInstance(UserSkillInputDto, dbSkills);
+  }
+
+  async getSkillsForUser(userId: number) {
+    return this.prisma.userSkill.findMany({
+      where: { userId },
+      include: { skill: true }, // if you want skill details
+    });
   }
 
   async setWalletAddress(userId: number, setAddressDto: SetAddressDto) {

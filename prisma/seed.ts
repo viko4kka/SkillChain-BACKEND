@@ -9,38 +9,50 @@ import { userSkills } from './seedingData/userSkill';
 const prisma = new PrismaClient();
 
 async function main() {
+  // Delete junction tables first (to avoid foreign key constraints)
+  await prisma.userSkill.deleteMany();
+  await prisma.userLanguage.deleteMany();
+
+  // Delete main tables (users depend on locations, so delete users first)
+  await prisma.user.deleteMany();
+  await prisma.skill.deleteMany();
+  await prisma.language.deleteMany();
+  await prisma.location.deleteMany();
+
+  // Reset auto-increment sequences
+  await prisma.$executeRaw`ALTER SEQUENCE "Location_id_seq" RESTART WITH 1`;
+  await prisma.$executeRaw`ALTER SEQUENCE "Skill_id_seq" RESTART WITH 1`;
+  await prisma.$executeRaw`ALTER SEQUENCE "Language_id_seq" RESTART WITH 1`;
+  await prisma.$executeRaw`ALTER SEQUENCE "User_id_seq" RESTART WITH 1`;
+
+  // Create reference tables first
+  // LOCATIONS table (users depend on this)
+  await prisma.location.createMany({
+    data: locations,
+  });
+
   // SKILLS table
-  await prisma.skill.deleteMany(); // czysci tabele
   await prisma.skill.createMany({
     data: skills,
   });
 
   // LANGUAGES table
-  await prisma.language.deleteMany();
   await prisma.language.createMany({
     data: languages,
   });
 
-  // LOCATIONS table
-  await prisma.location.deleteMany();
-  await prisma.location.createMany({
-    data: locations,
-  });
-
-  // USERS table
-  await prisma.user.deleteMany();
+  // USERS table (depends on locations)
   await prisma.user.createMany({
     data: users,
   });
 
+  // Junction tables last
   // USER LANGUAGES table
-  await prisma.userLanguage.deleteMany();
   await prisma.userLanguage.createMany({
     data: userLanguages,
   });
 
   // USER SKILLS table
-  await prisma.userSkill.deleteMany();
   await prisma.userSkill.createMany({
     data: userSkills,
   });
