@@ -27,8 +27,11 @@ export class LanguageService {
     userId: number,
   ): Promise<UserLanguageDto> {
     const { id: languageId, description } = createLanguageDto;
-
-    const userLanguage = await this.prisma.userLanguage.create({
+    const userLanguage = await this.findOne(userId, languageId);
+    if (userLanguage) {
+      throw new BadRequestException('Language already exists for the user');
+    }
+    const createdUserLanguage = await this.prisma.userLanguage.create({
       data: {
         userId,
         languageId,
@@ -37,8 +40,8 @@ export class LanguageService {
     });
 
     return {
-      id: userLanguage.languageId,
-      description: userLanguage.description,
+      id: createdUserLanguage.languageId,
+      description: createdUserLanguage.description,
     };
   }
 

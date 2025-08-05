@@ -4,6 +4,7 @@ import {
   Get,
   Param,
   ParseIntPipe,
+  Patch,
   Post,
   Session,
   UseGuards,
@@ -13,6 +14,7 @@ import { ApiOkResponse } from '@nestjs/swagger';
 import { UserSkillDto } from './dto/userSkill.dto';
 import { SessionData } from 'express-session';
 import { AuthGuard } from 'src/auth/guards/auth.guard';
+import { UpdateUserSkillDto } from './dto/updateUserSkill.dto';
 
 @Controller('skills')
 export class SkillController {
@@ -36,5 +38,20 @@ export class SkillController {
   async createSkill(@Session() session: SessionData, @Body() createSkillDto: UserSkillDto) {
     const userId = session.user?.id;
     return this.skillService.createSkill(createSkillDto, userId!);
+  }
+
+  @ApiOkResponse({
+    description: 'Updates a skill for the logged-in user',
+    type: UserSkillDto,
+  })
+  @Patch(':id')
+  //@UseGuards(AuthGuard)
+  async updateSkill(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() updateDto: UpdateUserSkillDto,
+    //@Session() session: SessionData,
+  ) {
+    ///const userId = session.user?.id;
+    return this.skillService.updateSkill(21!, id, updateDto);
   }
 }

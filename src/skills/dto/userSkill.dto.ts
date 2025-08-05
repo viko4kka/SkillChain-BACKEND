@@ -6,7 +6,7 @@ export class UserSkillDto {
   @IsNumber()
   id: number;
 
-  @ApiProperty({ description: "Description of user's language skills", type: String })
+  @ApiProperty({ description: "Description of user's skills", type: String })
   @IsOptional()
   @IsString()
   description: string | null;
