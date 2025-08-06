@@ -5,5 +5,8 @@ model Project {
     description String
     githubLink  String?
     websiteLink String?
+    
+    startDate   DateTime
+    endDate     DateTime?
     user User @relation(fields: [idUser], references: [id])
 }
