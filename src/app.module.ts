@@ -9,6 +9,7 @@ import { PrismaModule } from 'prisma/prisma.module';
 import { ProjectsModule } from './projects/projects.module';
 import { CommonModule } from './common/common.module';
 import { LanguageModule } from './languages/language.module';
+import { SkillModule } from './skills/skill.module';
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { LanguageModule } from './languages/language.module';
     AuthModule,
     CommonModule,
     LanguageModule,
+    SkillModule,
     ProjectsModule,
     PrismaModule,
   ],
