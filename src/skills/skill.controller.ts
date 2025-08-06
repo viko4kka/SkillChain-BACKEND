@@ -27,16 +27,12 @@ export class SkillController {
     description: 'Returns all skills for a user',
     type: [UserSkillDto],
   })
-  @Get('/user/:id')
-  async getUserSkills(@Param('id', ParseIntPipe) userId: number) {
-    return this.skillService.getUserSkills(userId);
-  }
 
   @ApiOkResponse({
     description: 'Returns all skills for a user with confirmations',
     type: [UserSkillWithConfirmations],
   })
-  @Get('/user/:id/confirmations')
+  @Get('/user/:id')
   async getUserSkillsWithConfirmations(
     @Param('id', ParseIntPipe) userId: number,
   ): Promise<UserSkillWithConfirmations[]> {
