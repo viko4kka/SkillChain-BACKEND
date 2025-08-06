@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsOptional, IsString, IsUrl } from 'class-validator';
+import { IsDateString, IsOptional, IsString, IsUrl } from 'class-validator';
 
 export class InputProjectDto {
   @ApiProperty({ description: 'Name of the project' })
@@ -25,4 +25,18 @@ export class InputProjectDto {
   @IsUrl()
   @IsOptional()
   websiteLink: string | null;
+
+  @ApiProperty({ description: 'Project start date', type: String, format: 'date-time' })
+  @IsDateString()
+  startDate: string;
+
+  @ApiProperty({
+    description: 'Project end date',
+    type: String,
+    format: 'date-time',
+    required: false,
+  })
+  @IsDateString()
+  @IsOptional()
+  endDate?: string | null;
 }

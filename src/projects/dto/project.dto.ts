@@ -22,4 +22,15 @@ export class ProjectDto {
 
   @ApiProperty({ description: 'Link to the project website', type: String, required: false })
   websiteLink: string | null;
+
+  @ApiProperty({ description: 'Project start date', type: String, format: 'date-time' })
+  startDate: string;
+
+  @ApiProperty({
+    description: 'Project end date',
+    type: String,
+    format: 'date-time',
+    required: false,
+  })
+  endDate?: string | null;
 }

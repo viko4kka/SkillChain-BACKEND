@@ -29,24 +29,47 @@ export class ProjectsService {
       ...paginationService.getPaginationParams(),
     });
     return {
-      data: plainToInstance(ProjectDto, projects),
+      data: projects.map(project =>
+        plainToInstance(ProjectDto, {
+          ...project,
+          startDate: project.startDate?.toISOString(),
+          endDate: project.endDate ? project.endDate.toISOString() : null,
+        }),
+      ),
       ...paginationService.getPaginationResult(),
     };
   }
 
-  async createProject(createProjectDto: InputProjectDto, userId: number): Promise<Project> {
+  async createProject(createProjectDto: InputProjectDto, userId: number): Promise<ProjectDto> {
+    const { startDate, endDate } = createProjectDto;
+    if (startDate && endDate) {
+      const start = new Date(startDate);
+      const end = new Date(endDate);
+      if (start > end) {
+        throw new BadRequestException('Start date must be before end date');
+      }
+    }
     const project = await this.prisma.project.create({
       data: {
         ...createProjectDto,
         idUser: userId,
       },
     });
-    return plainToInstance(ProjectDto, project);
+    return plainToInstance(ProjectDto, {
+      ...project,
+      startDate: project.startDate?.toISOString(),
+      endDate: project.endDate ? project.endDate.toISOString() : null,
+    });
   }
 
   async findOne(id: number): Promise<ProjectDto | null> {
     const project = await this.prisma.project.findUnique({ where: { id } });
-    return project ? plainToInstance(ProjectDto, project) : null;
+    if (!project) return null;
+    return plainToInstance(ProjectDto, {
+      ...project,
+      startDate: project.startDate?.toISOString(),
+      endDate: project.endDate ? project.endDate.toISOString() : null,
+    });
   }
 
   async updateProject(
@@ -61,6 +84,16 @@ export class ProjectsService {
     if (project.idUser !== userId) {
       throw new BadRequestException('Cannot update other users projects');
     }
+
+    const { startDate, endDate } = updateProjectDto;
+    if (startDate && endDate) {
+      const start = new Date(startDate);
+      const end = new Date(endDate);
+      if (start > end) {
+        throw new BadRequestException('Start date must be before end date');
+      }
+    }
+
     const updated = await this.prisma.project.update({
       where: { id },
       data: {
