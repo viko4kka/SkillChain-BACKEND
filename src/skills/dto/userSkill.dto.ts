@@ -10,4 +10,9 @@ export class UserSkillDto {
   @IsOptional()
   @IsString()
   description: string | null;
+
+  @ApiProperty({ description: "Description of user's skills", type: String })
+  @IsOptional()
+  @IsString()
+  name: string | null;
 }

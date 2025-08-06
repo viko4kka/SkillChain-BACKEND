@@ -3,6 +3,7 @@ import { PrismaService } from 'prisma/prisma.service';
 import { UserSkillDto } from './dto/userSkill.dto';
 import { plainToInstance } from 'class-transformer';
 import { UpdateUserSkillDto } from './dto/updateUserSkill.dto';
+import { UserSkillWithConfirmations } from '../users/dto/UserSkillWithConfirmations.dto';
 
 @Injectable()
 export class SkillService {
@@ -22,6 +23,49 @@ export class SkillService {
       }));
   }
 
+  async getUserSkillsWithConfirmations(userId: number): Promise<UserSkillWithConfirmations[]> {
+    const userSkills = await this.prisma.userSkill.findMany({
+      where: {
+        userId: userId
+      },
+      include: {
+        skill: {
+          include: {
+            confirmations: {
+              where: {
+                receiverId: userId
+              },
+              include: {
+                approver: {
+                  select: {
+                    id: true,
+                    firstName: true,
+                    lastName: true
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    });
+
+    return userSkills
+      .filter(us => us.skill)
+      .map(userSkill => ({
+        id: userSkill.skill.id,
+        name: userSkill.skill.name,
+        description: userSkill.description ?? '',
+        confirmations: (userSkill.skill.confirmations || [])
+          .filter(confirmation => confirmation.approver)
+          .map(confirmation => ({
+            id: confirmation.approver.id,
+            firstName: confirmation.approver.firstName,
+            lastName: confirmation.approver.lastName
+          }))
+      }));
+  }
+
   async createSkill(createSkillDto: UserSkillDto, userId: number): Promise<UserSkillDto> {
     const { id: skillId, description } = createSkillDto;
     const userSkill = await this.findOne(userId, skillId);
@@ -34,10 +78,14 @@ export class SkillService {
         skillId,
         description,
       },
+      include: {
+        skill: true
+      }
     });
 
     return {
-      id: createdUserSkill.skillId,
+      id: createdUserSkill.skill!.id,
+      name: createdUserSkill.skill!.name,
       description: createdUserSkill.description,
     };
   }
@@ -47,8 +95,15 @@ export class SkillService {
       where: {
         userId_skillId: { userId, skillId },
       },
+      include: {
+        skill: true
+      }
     });
-    return userSkill ? plainToInstance(UserSkillDto, userSkill) : null;
+    return userSkill && userSkill.skill ? {
+      id: userSkill.skill.id,
+      name: userSkill.skill.name,
+      description: userSkill.description,
+    } : null;
   }
 
   async updateSkill(
@@ -63,8 +118,15 @@ export class SkillService {
     const updatedSkill = await this.prisma.userSkill.update({
       where: { userId_skillId: { userId, skillId } },
       data: { description: updateDto.description },
+      include: {
+        skill: true
+      }
     });
-    return plainToInstance(UserSkillDto, updatedSkill);
+    return {
+      id: updatedSkill.skill!.id,
+      name: updatedSkill.skill!.name,
+      description: updatedSkill.description,
+    };
   }
 
   async deleteSkill(userId: number, skillId: number): Promise<void> {
