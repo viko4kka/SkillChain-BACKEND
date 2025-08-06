@@ -17,18 +17,21 @@ import { SessionData } from 'express-session';
 import { AuthGuard } from 'src/auth/guards/auth.guard';
 import { UpdateUserSkillDto } from './dto/updateUserSkill.dto';
 import { MessageResponseDto } from 'src/utlis/dto/messageResponse.dto';
+import { UserSkillWithConfirmations } from '../users/dto/UserSkillWithConfirmations.dto';
 
 @Controller('skills')
 export class SkillController {
   constructor(private readonly skillService: SkillService) {}
 
   @ApiOkResponse({
-    description: 'Returns all skills for a user',
-    type: [UserSkillDto],
+    description: 'Returns all skills for a user with confirmations',
+    type: [UserSkillWithConfirmations],
   })
   @Get('/user/:id')
-  async getUserSkills(@Param('id', ParseIntPipe) userId: number) {
-    return this.skillService.getUserSkills(userId);
+  async getUserSkillsWithConfirmations(
+    @Param('id', ParseIntPipe) userId: number,
+  ): Promise<UserSkillWithConfirmations[]> {
+    return this.skillService.getUserSkillsWithConfirmations(userId);
   }
 
   @ApiOkResponse({
