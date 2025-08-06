@@ -8,7 +8,6 @@ import { UserSkillWithConfirmations } from '../users/dto/UserSkillWithConfirmati
 export class SkillService {
   constructor(private readonly prisma: PrismaService) {}
 
-
   async getUserSkillsWithConfirmations(userId: number): Promise<UserSkillWithConfirmations[]> {
     const userSkills = await this.prisma.userSkill.findMany({
       where: {

@@ -27,7 +27,6 @@ export class SkillController {
     description: 'Returns all skills for a user',
     type: [UserSkillDto],
   })
-
   @ApiOkResponse({
     description: 'Returns all skills for a user with confirmations',
     type: [UserSkillWithConfirmations],
