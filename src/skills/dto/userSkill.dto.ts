@@ -11,7 +11,7 @@ export class UserSkillDto {
   @IsString()
   description: string | null;
 
-  @ApiProperty({ description: "Name of skill", type: String })
+  @ApiProperty({ description: 'Name of skill', type: String })
   @IsOptional()
   @IsString()
   name: string;
