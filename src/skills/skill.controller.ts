@@ -24,10 +24,6 @@ export class SkillController {
   constructor(private readonly skillService: SkillService) {}
 
   @ApiOkResponse({
-    description: 'Returns all skills for a user',
-    type: [UserSkillDto],
-  })
-  @ApiOkResponse({
     description: 'Returns all skills for a user with confirmations',
     type: [UserSkillWithConfirmations],
   })
