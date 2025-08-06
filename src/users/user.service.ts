@@ -193,14 +193,11 @@ export class UserService {
       'event TokenMinted(address indexed from, address indexed to, uint256 indexed skillId)',
     ];
 
-    const txnHash = await provider.getTransaction(confirmSkillDto.txnHash);
-    if (!txnHash) throw new ForbiddenException('Transaction not found');
-
     const receipt = await provider.getTransactionReceipt(confirmSkillDto.txnHash);
     if (!receipt) throw new ForbiddenException('Transaction receipt not found');
 
     const iface = new ethers.Interface(abi);
-    const events = receipt.logs
+    const event = receipt.logs
       .map(log => {
         try {
           return iface.parseLog(log);
@@ -212,13 +209,16 @@ export class UserService {
         event =>
           event &&
           event.name === 'TokenMinted' &&
-          (event.args.from as string).toLowerCase() === approverAddress.toLowerCase() &&
-          (event.args.to as string).toLowerCase() ===
-            confirmSkillDto.receiverWallet.toLowerCase() &&
+          event.args &&
+          typeof event.args.from === 'string' &&
+          typeof event.args.to === 'string' &&
+          event.args.skillId != null &&
+          event.args.from.toLowerCase() === approverAddress.toLowerCase() &&
+          event.args.to.toLowerCase() === confirmSkillDto.receiverWallet.toLowerCase() &&
           (event.args.skillId as string).toString() === confirmSkillDto.skillId.toString(),
       );
 
-    if (!events) throw new ForbiddenException('Data invalid or not found in transaction events');
+    if (!event) throw new ForbiddenException('Data invalid or not found in transaction events');
 
     const receiver = await this.prisma.user.findUnique({
       where: { walletAddress: confirmSkillDto.receiverWallet },
