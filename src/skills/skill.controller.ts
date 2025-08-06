@@ -37,7 +37,9 @@ export class SkillController {
     type: [UserSkillWithConfirmations],
   })
   @Get('/user/:id/confirmations')
-  async getUserSkillsWithConfirmations(@Param('id', ParseIntPipe) userId: number): Promise<UserSkillWithConfirmations[]> {
+  async getUserSkillsWithConfirmations(
+    @Param('id', ParseIntPipe) userId: number,
+  ): Promise<UserSkillWithConfirmations[]> {
     return this.skillService.getUserSkillsWithConfirmations(userId);
   }
 

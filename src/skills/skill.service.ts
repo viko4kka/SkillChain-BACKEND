@@ -1,7 +1,6 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { PrismaService } from 'prisma/prisma.service';
 import { UserSkillDto } from './dto/userSkill.dto';
-import { plainToInstance } from 'class-transformer';
 import { UpdateUserSkillDto } from './dto/updateUserSkill.dto';
 import { UserSkillWithConfirmations } from '../users/dto/UserSkillWithConfirmations.dto';
 
@@ -26,28 +25,28 @@ export class SkillService {
   async getUserSkillsWithConfirmations(userId: number): Promise<UserSkillWithConfirmations[]> {
     const userSkills = await this.prisma.userSkill.findMany({
       where: {
-        userId: userId
+        userId: userId,
       },
       include: {
         skill: {
           include: {
             confirmations: {
               where: {
-                receiverId: userId
+                receiverId: userId,
               },
               include: {
                 approver: {
                   select: {
                     id: true,
                     firstName: true,
-                    lastName: true
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
+                    lastName: true,
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
     });
 
     return userSkills
@@ -61,8 +60,8 @@ export class SkillService {
           .map(confirmation => ({
             id: confirmation.approver.id,
             firstName: confirmation.approver.firstName,
-            lastName: confirmation.approver.lastName
-          }))
+            lastName: confirmation.approver.lastName,
+          })),
       }));
   }
 
@@ -79,13 +78,13 @@ export class SkillService {
         description,
       },
       include: {
-        skill: true
-      }
+        skill: true,
+      },
     });
 
     return {
-      id: createdUserSkill.skill!.id,
-      name: createdUserSkill.skill!.name,
+      id: createdUserSkill.skill.id,
+      name: createdUserSkill.skill.name,
       description: createdUserSkill.description,
     };
   }
@@ -96,14 +95,16 @@ export class SkillService {
         userId_skillId: { userId, skillId },
       },
       include: {
-        skill: true
-      }
+        skill: true,
+      },
     });
-    return userSkill && userSkill.skill ? {
-      id: userSkill.skill.id,
-      name: userSkill.skill.name,
-      description: userSkill.description,
-    } : null;
+    return userSkill && userSkill.skill
+      ? {
+          id: userSkill.skill.id,
+          name: userSkill.skill.name,
+          description: userSkill.description,
+        }
+      : null;
   }
 
   async updateSkill(
@@ -119,12 +120,12 @@ export class SkillService {
       where: { userId_skillId: { userId, skillId } },
       data: { description: updateDto.description },
       include: {
-        skill: true
-      }
+        skill: true,
+      },
     });
     return {
-      id: updatedSkill.skill!.id,
-      name: updatedSkill.skill!.name,
+      id: updatedSkill.skill.id,
+      name: updatedSkill.skill.name,
       description: updatedSkill.description,
     };
   }

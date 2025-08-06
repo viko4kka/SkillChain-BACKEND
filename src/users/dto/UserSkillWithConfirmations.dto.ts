@@ -18,9 +18,9 @@ export class UserSkillWithConfirmations {
       properties: {
         id: { type: 'number' },
         firstName: { type: 'string' },
-        lastName: { type: 'string' }
-      }
-    }
+        lastName: { type: 'string' },
+      },
+    },
   })
   confirmations: {
     id: number;
