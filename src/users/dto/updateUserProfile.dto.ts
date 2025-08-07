@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsOptional, IsString, IsUrl } from 'class-validator';
+import { IsNumber, IsOptional, IsString, IsUrl } from 'class-validator';
 
 export class UpdateUserProfileDto {
   @ApiProperty({ description: 'Description that provides more information about the user' })
@@ -21,4 +21,9 @@ export class UpdateUserProfileDto {
   @IsOptional()
   @IsUrl()
   linkedinUrl: string | null;
+
+  @ApiProperty({ description: 'Location ID of the user' })
+  @IsOptional()
+  @IsNumber()
+  locationId: number | null;
 }
