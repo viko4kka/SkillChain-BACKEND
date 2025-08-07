@@ -89,6 +89,7 @@ export class UserController {
   ): Promise<MessageResponseDto> {
     const userId = session.user?.id;
     await this.userService.setWalletAddress(userId!, setAddressDto);
+    session.user!.walletAddress = setAddressDto.walletAddress;
     return { message: 'Wallet address updated successfully' };
   }
 
